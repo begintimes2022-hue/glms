@@ -1,0 +1,30 @@
+{% extends "base_user.html" %}
+
+{% block title %}{{ test }}{% endblock %}
+
+{% block content %}
+<p><a href="{% url 'courses:detail' course.id %}">← К модулю</a></p>
+
+<h1>{{ test }}</h1>
+
+<form method="post">
+  {% csrf_token %}
+
+  {% for q in questions %}
+    <fieldset style="margin-bottom: 16px;">
+      <legend><b>{{ forloop.counter }}. {{ q.text }}</b></legend>
+
+      {% for ch in q.choices.all %}
+        <label style="display:block;">
+          <input type="radio" name="q_{{ q.id }}" value="{{ ch.id }}">
+          {{ ch.text }}
+        </label>
+      {% endfor %}
+    </fieldset>
+  {% empty %}
+    <p>В этом тесте пока нет вопросов.</p>
+  {% endfor %}
+
+  <button type="submit">Завершить тест</button>
+</form>
+{% endblock %}

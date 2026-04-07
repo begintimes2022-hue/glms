@@ -1,0 +1,36 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="tg-page">
+  <header class="tg-page-header">
+    <div>
+      <h1 class="tg-page-title">Удаление группы</h1>
+      <p class="tg-page-subtitle">{{ group_obj.name }}</p>
+    </div>
+    <div class="tg-toolbar">
+      <a class="btn btn-ghost" href="{% url 'admin:auth_group_changelist' %}">Назад к группам</a>
+    </div>
+  </header>
+
+  <section class="tg-card">
+    {% if has_users %}
+      <div class="tg-alert">
+        Нельзя удалить группу: есть привязанные пользователи ({{ users_count }}).
+      </div>
+      <div class="tg-actions">
+        <a class="tg-btn tg-btn-outline" href="{% url 'admin:auth_group_changelist' %}">ОК</a>
+      </div>
+    {% else %}
+      <p>Вы уверены, что хотите удалить группу <strong>{{ group_obj.name }}</strong>?</p>
+      <form method="post">
+        {% csrf_token %}
+        <div class="tg-actions">
+          <button type="submit" class="tg-btn tg-btn-danger">Удалить</button>
+          <a class="tg-btn tg-btn-outline" href="{% url 'admin:auth_group_changelist' %}">Отмена</a>
+        </div>
+      </form>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

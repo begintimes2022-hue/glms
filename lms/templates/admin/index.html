@@ -1,0 +1,70 @@
+{% extends "admin/base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="tg-page">
+  <header class="tg-page-header">
+    <div>
+      <h1 class="tg-page-title">Панель управления</h1>
+    </div>
+  </header>
+
+  <div class="app-grid">
+    {% for app in app_list %}
+      {% if app.app_label == "courses" %}
+          <article class="app-card">
+            <ul>
+              <li>
+                <span>Разделы</span>
+                <span>
+                  <a class="btn btn-ghost" href="{% url 'admin:courses_knowledgebasesection_add' %}">Добавить</a>
+                  <a class="btn btn-primary" href="{% url 'admin:courses_knowledgebasesection_changelist' %}">Открыть</a>
+                </span>
+              </li>
+              <li>
+                <span>Модули</span>
+                <span>
+                  <a class="btn btn-ghost" href="{% url 'admin:courses_course_add' %}">Добавить</a>
+                  <a class="btn btn-primary" href="{% url 'admin:courses_table' %}">Открыть</a>
+                </span>
+              </li>
+              <li>
+                <span>Статьи</span>
+                <span>
+                  <a class="btn btn-ghost" href="{% url 'admin:courses_lesson_add' %}">Добавить</a>
+                  <a class="btn btn-primary" href="{% url 'admin:courses_lesson_changelist' %}">Открыть</a>
+                </span>
+              </li>
+              <li>
+                <span>Курсы</span>
+                <span>
+                  <a class="btn btn-ghost" href="{% url 'admin:courses_learningcourse_add' %}">Добавить</a>
+                  <a class="btn btn-primary" href="{% url 'admin:courses_learningcourse_changelist' %}">Открыть</a>
+                </span>
+              </li>
+              <li>
+                <span>Тесты</span>
+                <span>
+                  <a class="btn btn-ghost" href="{% url 'admin:courses_question_add' %}">Добавить</a>
+                  <a class="btn btn-primary" href="{% url 'admin:courses_question_changelist' %}">Открыть</a>
+                </span>
+              </li>
+              <li>
+                <span>Прогресс прохождения</span>
+                <span>
+                  <a class="btn btn-primary" href="{% url 'admin:courses_lessonattempt_changelist' %}">Открыть</a>
+                </span>
+              </li>
+              <li>
+                <span>Платежные заказы</span>
+                <span>
+                  <a class="btn btn-primary" href="{% url 'admin:courses_paymentorder_changelist' %}">Открыть</a>
+                </span>
+              </li>
+            </ul>
+        </article>
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends "base_user.html" %}
+
+{% block title %}База знаний{% endblock %}
+
+{% block content %}
+<section class="page-head">
+  <h1 class="page-title">База знаний</h1>
+  <p class="page-subtitle">Выберите раздел, затем модуль, затем нужную статью.</p>
+</section>
+
+<section class="stack kb-tree">
+  {% for section_node in hierarchy %}
+    <article class="card">
+      <div class="card-body stack">
+        <details class="kb-section" {% if forloop.first %}open{% endif %}>
+          <summary class="kb-toggle kb-toggle-section">{{ section_node.section.title }}</summary>
+          <div class="kb-panel stack">
+            {% if section_node.section.description %}
+              <p class="muted">{{ section_node.section.description }}</p>
+            {% endif %}
+
+            {% for module_node in section_node.modules %}
+              <details class="kb-module">
+                <summary class="kb-toggle kb-toggle-module">{{ module_node.module.title }}</summary>
+                <div class="kb-panel stack">
+                  {% if module_node.module.description %}
+                    <p class="muted">{{ module_node.module.description|striptags|truncatechars:160 }}</p>
+                  {% endif %}
+
+                  <div class="kb-articles stack">
+                    {% for article in module_node.articles %}
+                      <div class="list-item kb-article">
+                        <div class="card-head">
+                          <div>
+                            <p class="kb-article-label">Статья</p>
+                            <h5 class="card-title">
+                              <a href="{% url 'courses:kb_lesson_detail' module_node.module.id article.id %}">{{ article.title }}</a>
+                            </h5>
+                          </div>
+                        </div>
+                        <div class="actions">
+                          <a class="btn btn-primary" href="{% url 'courses:kb_lesson_detail' module_node.module.id article.id %}">Открыть статью</a>
+                        </div>
+                      </div>
+                    {% empty %}
+                      <p class="muted">В этом модуле пока нет статей.</p>
+                    {% endfor %}
+                  </div>
+                </div>
+              </details>
+            {% empty %}
+              <p class="muted">В этом разделе пока нет доступных модулей.</p>
+            {% endfor %}
+          </div>
+        </details>
+      </div>
+    </article>
+  {% empty %}
+    <div class="empty">Для вашего тарифа пока нет доступных материалов.</div>
+  {% endfor %}
+</section>
+{% endblock %}

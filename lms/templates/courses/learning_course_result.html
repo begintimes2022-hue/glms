@@ -1,0 +1,41 @@
+{% extends "base_user.html" %}
+
+{% block title %}{% if entry.kind == "final_test" %}Результат итогового теста{% else %}Результат теста{% endif %}{% endblock %}
+
+{% block content %}
+<div class="actions">
+  <a href="{% url 'courses:learning_detail' learning_course.id %}" class="btn btn-ghost">← К курсу</a>
+  {% if next_entry and attempt and attempt.passed %}
+    <a href="{% url 'courses:learning_item' learning_course.id next_entry.sequence_index %}" class="btn btn-ghost">Следующий материал →</a>
+  {% endif %}
+</div>
+
+<section class="page-head">
+  <h1 class="page-title">Результат</h1>
+  <p class="page-subtitle">{% if entry.kind == "final_test" %}Итоговый тест курса{% else %}{{ entry.title }}{% endif %}</p>
+</section>
+
+<section class="card">
+  <div class="card-body">
+    {% if attempt %}
+      {% if attempt.passed %}
+        <p class="alert alert-success">{% if entry.kind == "final_test" %}Итоговый тест пройден успешно.{% else %}Тест пройден успешно.{% endif %}</p>
+      {% else %}
+        <p class="alert alert-danger">{% if entry.kind == "final_test" %}Итоговый тест не пройден.{% else %}Тест не пройден.{% endif %}</p>
+      {% endif %}
+      <div class="metric-grid">
+        <div class="metric">
+          <p class="metric-label">Результат</p>
+          <p class="metric-value">{{ attempt.score }}%</p>
+        </div>
+        <div class="metric">
+          <p class="metric-label">Верных ответов</p>
+          <p class="metric-value">{{ attempt.correct }}/{{ attempt.total }}</p>
+        </div>
+      </div>
+    {% else %}
+      <p class="alert alert-neutral">Попытка не найдена.</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

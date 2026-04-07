@@ -1,0 +1,16 @@
+{% extends "base_user.html" %}
+
+{% block title %}Результат теста{% endblock %}
+
+{% block content %}
+<p><a href="{% url 'courses:detail' course.id %}">← К модулю</a></p>
+
+<h1>Результат: {{ test }}</h1>
+
+{% if attempt %}
+  <p>Результат: <b>{{ attempt.score }}%</b></p>
+  <p>Верно: {{ attempt.correct }} / {{ attempt.total }}</p>
+{% else %}
+  <p>Попыток пока нет.</p>
+{% endif %}
+{% endblock %}

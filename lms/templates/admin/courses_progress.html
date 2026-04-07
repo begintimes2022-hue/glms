@@ -1,0 +1,106 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="tg-page">
+  <header class="tg-page-header">
+    <div>
+      <h1 class="tg-page-title">{{ title }}</h1>
+      <p class="tg-page-subtitle">Порог прохождения итогового теста: <b>{{ pass_threshold }}%</b>.</p>
+    </div>
+    <div class="tg-toolbar">
+      <a class="btn btn-ghost" href="{% url 'admin:courses_progress' %}">Сбросить фильтры</a>
+    </div>
+  </header>
+
+  <section class="tg-card">
+    <h2 class="tg-card-title">Фильтры</h2>
+    <form method="get">
+      <div class="table-wrap" style="margin-top: 14px;">
+        <table class="tg-table">
+          <thead>
+            <tr>
+              <th>Логин</th>
+              <th>Группа</th>
+              <th>Модуль</th>
+              <th class="text-center col-narrow">Всего статей</th>
+              <th class="text-center col-narrow">Пройдено статей</th>
+              <th class="text-center col-wide">Пройдено %</th>
+              <th class="text-center col-wide">Финальный тест %</th>
+              <th class="text-center">Завершено</th>
+              <th class="text-right">Детали</th>
+            </tr>
+            <tr class="tg-filter-row">
+              <th>
+                <select name="user_id">
+                  <option value="">Все логины</option>
+                  {% for u in users_for_filter %}
+                    <option value="{{ u.id }}" {% if filters.user_id == u.id|stringformat:"s" %}selected{% endif %}>{{ u.username }}</option>
+                  {% endfor %}
+                </select>
+              </th>
+              <th>
+                <select name="tariff_code">
+                  <option value="">Все группы</option>
+                  {% for g in groups_for_filter %}
+                    <option value="{{ g.name }}" {% if filters.tariff_code == g.name %}selected{% endif %}>
+                      {{ g.profile.public_name }} ({{ g.name }})
+                    </option>
+                  {% endfor %}
+                </select>
+              </th>
+              <th>
+                <select name="course_id">
+                  <option value="">Все модули</option>
+                  {% for c in courses_for_filter %}
+                    <option value="{{ c.id }}" {% if filters.course_id == c.id|stringformat:"s" %}selected{% endif %}>{{ c.title }}</option>
+                  {% endfor %}
+                </select>
+              </th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th><input type="number" min="0" max="100" name="final_percent_min" value="{{ filters.final_percent_min }}" placeholder="мин %"></th>
+              <th>
+                <select name="completed">
+                  <option value="">Любой</option>
+                  <option value="yes" {% if filters.completed == "yes" %}selected{% endif %}>Да</option>
+                  <option value="no" {% if filters.completed == "no" %}selected{% endif %}>Нет</option>
+                </select>
+              </th>
+              <th class="text-right"><button type="submit" class="btn btn-primary tg-btn-eq">Применить</button></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in rows %}
+              <tr>
+                <td><a href="{% url 'admin:auth_user_change' row.user.id %}">{{ row.user.username }}</a></td>
+                <td>{{ row.groups_str }}</td>
+                <td><a href="{% url 'admin:courses_course_change' row.course.id %}">{{ row.course.title }}</a></td>
+                <td class="text-center">{{ row.total_lessons }}</td>
+                <td class="text-center">{{ row.passed_lessons }}</td>
+                <td class="text-center">{{ row.passed_percent }}%</td>
+                <td class="text-center">{{ row.final_test_percent }}%</td>
+                <td class="text-center">
+                  {% if row.course_completed %}
+                    <span class="tg-pill">Да</span>
+                  {% else %}
+                    <span class="chip chip-muted">Нет</span>
+                  {% endif %}
+                </td>
+                <td class="text-right">
+                  <a class="btn btn-primary tg-btn-eq" href="{% url 'admin:course_user_history' row.user.id row.course.id %}">История</a>
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="11" class="text-center">Нет данных</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </form>
+  </section>
+</div>
+{% endblock %}

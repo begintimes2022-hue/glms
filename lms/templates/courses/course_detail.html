@@ -1,0 +1,105 @@
+{% extends "base_user.html" %}
+
+{% block title %}{{ course }}{% endblock %}
+
+{% block content %}
+<div class="actions">
+  <a href="{% url 'courses:list' %}" class="btn btn-ghost">← Все модули</a>
+</div>
+
+<section class="page-head">
+  <h1 class="page-title">{{ course }}</h1>
+  <p class="page-subtitle">{{ course.description }}</p>
+</section>
+
+<section class="card">
+  <div class="card-body">
+    {% if course_completed %}
+      <p class="alert alert-success">Модуль завершён: все материалы пройдены, итоговый тест сдан ({{ pass_threshold }}%+).</p>
+    {% else %}
+      <p class="alert alert-neutral">
+        Прогресс по модулю: <b>{{ completed_items|default:0 }}/{{ total_items|default:0 }}</b> ({{ progress_percent|default:0 }}%).
+        Итоговый тест:
+        {% if not has_final_material %}
+          <b>не назначен</b>.
+        {% elif final_test_passed %}
+          <b>сдан</b>.
+        {% else %}
+          <b>не сдан</b>.
+        {% endif %}
+      </p>
+    {% endif %}
+
+    <div class="metric-grid">
+      <div class="metric">
+        <p class="metric-label">Прогресс модуля</p>
+        <p class="metric-value">{{ progress_percent|default:0 }}%</p>
+      </div>
+      <div class="metric">
+        <p class="metric-label">Итоговый тест</p>
+        <p class="metric-value">
+          {% if final_test_passed %}Сдан{% elif has_final_material %}Не сдан{% else %}Нет{% endif %}
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="card">
+  <div class="card-body">
+    <h2 class="card-title">Материалы модуля</h2>
+    <ul class="list">
+      {% for l in lessons %}
+        <li class="list-item">
+          <div class="card-head">
+            <h3 class="card-title">
+              {% if l.is_unlocked %}
+                <a href="{% url 'courses:lesson' course.id l.id %}">{{ l.order }}. {{ l.title }}</a>
+              {% else %}
+                <span>{{ l.order }}. {{ l.title }}</span>
+              {% endif %}
+            </h3>
+            <div class="lesson-meta">
+              {% if l.access_state == "completed" %}
+                <span class="status status-ok">Завершен</span>
+              {% elif l.access_state == "available" %}
+                <span class="status status-progress">Доступен</span>
+              {% else %}
+                <span class="status status-bad">Заблокирован</span>
+              {% endif %}
+              {% if l.is_final %}
+                <span class="status status-progress">Финальная статья</span>
+              {% endif %}
+            </div>
+          </div>
+          <div class="lesson-meta">
+            {% if l.viewed %}
+              <span class="status status-ok">Просмотрено</span>
+            {% else %}
+              <span class="status status-neutral">Не просмотрено</span>
+            {% endif %}
+
+            {% if l.has_test %}
+              {% if l.best_passed %}
+                <span class="status status-ok">Тест пройден ({{ l.best_score|default:0 }}%)</span>
+              {% elif l.attempted %}
+                <span class="status status-bad">Тест не пройден ({{ l.best_score|default:0 }}%)</span>
+              {% else %}
+                <span class="status status-neutral">Тест не проходили</span>
+              {% endif %}
+            {% else %}
+              <span class="status status-neutral">Без теста</span>
+            {% endif %}
+            {% if not l.is_unlocked %}
+              <span class="status status-bad">Откроется после прохождения предыдущей статьи</span>
+            {% endif %}
+          </div>
+        </li>
+      {% empty %}
+        <li class="empty">В этом модуле пока нет материалов.</li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+
+{% endblock %}

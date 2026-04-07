@@ -1,0 +1,45 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+  <header class="page-head">
+    <h1 class="page-title">Прогресс пользователей</h1>
+    <p class="page-subtitle">Порог прохождения теста: <b>{{ pass_threshold }}%</b></p>
+  </header>
+
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Пользователь</th>
+          <th>Модуль</th>
+          <th>Просмотрено статей</th>
+          <th>Просмотрено %</th>
+          <th>Пройдено тестов</th>
+          <th>Пройдено %</th>
+          <th>Модуль завершен</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in rows %}
+          <tr>
+            <td>{{ r.user.username }}</td>
+            <td>{{ r.course.title }}</td>
+            <td>{{ r.viewed_count }} / {{ r.total_lessons }}</td>
+            <td>{{ r.viewed_percent }}%</td>
+            <td>{{ r.tests_passed }} / {{ r.tests_total }} (выполнено: {{ r.tests_done }})</td>
+            <td>{{ r.tests_percent }}%</td>
+            <td>
+              {% if r.course_completed %}
+                <span class="chip chip-success">Да</span>
+              {% else %}
+                <span class="chip chip-muted">Нет</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="7" class="text-center">Нет данных</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

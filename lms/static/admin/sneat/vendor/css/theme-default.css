@@ -1,0 +1,8 @@
+/* Sneat Theme Default */
+:root {
+  --bs-primary: #7367f0;
+  --primary-color: #7367f0;
+  --bs-body-font-family: "Public Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+.navbar { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; }
+.sidebar { background: #f8f9fa; }

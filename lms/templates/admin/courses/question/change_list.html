@@ -1,0 +1,63 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="tg-page">
+  <header class="tg-page-header">
+    <div>
+      <h1 class="tg-page-title">Тесты</h1>
+      <p class="tg-page-subtitle">Управление тестами, привязанными к статьям.</p>
+    </div>
+    <div class="tg-toolbar">
+      <a class="btn btn-ghost" href="{% url 'admin:courses_question_changelist' %}">Сбросить фильтры</a>
+      <a class="btn btn-primary" href="{% url 'admin:courses_question_add' %}">Создать тест</a>
+    </div>
+  </header>
+
+  <section class="tg-card">
+    <h2 class="tg-card-title">Тесты</h2>
+    <form method="get">
+      {% comment %} filters are in the table header {% endcomment %}
+      <div class="table-wrap" style="margin-top: 14px;">
+        <table class="tg-table">
+          <thead>
+            <tr>
+              <th>Тест</th>
+              <th>Статья</th>
+              <th class="text-center">Верный ответ</th>
+              <th class="text-right">Действия</th>
+            </tr>
+            <tr class="tg-filter-row">
+              <th><input type="text" name="q" value="{{ cl.query }}" placeholder="Текст"></th>
+              <th>
+                <select name="lesson_id">
+                  <option value="">Все статьи</option>
+                  {% for lesson in lessons_for_filter %}
+                    <option value="{{ lesson.id }}"{% if selected_lesson_id == lesson.id|stringformat:"s" %} selected{% endif %}>
+                      {% if lesson.course.section %}{{ lesson.course.section.title }} / {% endif %}{{ lesson.course.title }} / {{ lesson.title }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </th>
+              <th></th>
+              <th class="text-right"><button class="btn btn-primary" type="submit">Применить</button></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for result in cl.result_list %}
+              <tr>
+                <td>{{ result.question_text }}</td>
+                <td>{{ result.lesson.title }}</td>
+                <td class="text-center">{{ result.correct_answer }}</td>
+                <td class="text-right"><a class="btn btn-primary" href="{% url 'admin:courses_question_change' result.pk %}">Открыть</a></td>
+              </tr>
+            {% empty %}
+              <tr><td colspan="4" class="text-center">Тесты не найдены</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </form>
+  </section>
+</div>
+{% endblock %}

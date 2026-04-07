@@ -1,0 +1,105 @@
+{% extends "base_user.html" %}
+
+{% block title %}Личный кабинет{% endblock %}
+
+{% block content %}
+<section class="page-head">
+  <h1 class="page-title">Личный кабинет</h1>
+  <p class="page-subtitle">Информация о вашем профиле и доступах.</p>
+</section>
+
+<section class="stack">
+  {% if messages %}
+    {% for message in messages %}
+      <p class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% else %}alert-neutral{% endif %}">{{ message }}</p>
+    {% endfor %}
+  {% endif %}
+
+  <article class="card">
+    <div class="card-body">
+      <div class="card-head">
+        <div>
+          <h2 class="card-title">Профиль</h2>
+          <p class="muted">Основные данные и параметры доступа.</p>
+        </div>
+      </div>
+      <div class="profile-grid profile-grid-wide">
+        <div class="profile-item">
+          <span class="profile-label">ФИО</span>
+          <span class="profile-value">
+            {% if user.first_name or user.last_name %}
+              {{ user.first_name }} {{ user.last_name }}
+            {% else %}
+              —
+            {% endif %}
+          </span>
+        </div>
+        <div class="profile-item">
+          <span class="profile-label">Дата регистрации</span>
+          <span class="profile-value">{{ user.date_joined|date:"d.m.Y H:i:s" }}</span>
+        </div>
+        <div class="profile-item">
+          <span class="profile-label">Текущий тариф</span>
+          <span class="profile-value">
+            {% if group_profile and group_profile.public_name %}
+              {{ group_profile.public_name }}
+            {% elif group %}
+              {{ group.name }}
+            {% else %}
+              —
+            {% endif %}
+          </span>
+        </div>
+        <div class="profile-item">
+          <span class="profile-label">Статус оплаты</span>
+          <span class="profile-value">
+            {% if user_access.paid %}
+              Оплачено
+              {% if access_state == "expired" %}
+                <form method="post" action="{% url 'courses:repeat_payment' %}" style="display:inline-block; margin-left: 12px;">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-primary">Продление доступа</button>
+                </form>
+              {% endif %}
+            {% else %}
+              Не оплачено
+              <form method="post" action="{% url 'courses:repeat_payment' %}" style="display:inline-block; margin-left: 12px;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary">Повторить платеж</button>
+              </form>
+            {% endif %}
+          </span>
+        </div>
+        <div class="profile-item">
+          <span class="profile-label">Дата/время начала доступа</span>
+          <span class="profile-value">
+            {% if user_access.paid and user_access.access_start_at %}
+              {{ user_access.access_start_at|date:"d.m.Y H:i:s" }}
+            {% else %}
+              не активировано
+            {% endif %}
+          </span>
+        </div>
+        <div class="profile-item">
+          <span class="profile-label">Дата/время окончания доступа</span>
+          <span class="profile-value">
+            {% if user_access.paid and user_access.access_end_at %}
+              {{ user_access.access_end_at|date:"d.m.Y H:i:s" }}
+            {% else %}
+              не активировано
+            {% endif %}
+          </span>
+        </div>
+        <div class="profile-item">
+          <span class="profile-label">Логин</span>
+          <span class="profile-value">{{ user.username }}</span>
+        </div>
+        <div class="profile-item">
+          <span class="profile-label">Электронная почта</span>
+          <span class="profile-value">{{ user.email|default:"—" }}</span>
+        </div>
+          </div>
+    </div>
+  </article>
+</section>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base_user.html" %}
+
+{% block title %}{% if entry.kind == "final_test" %}Итоговый тест{% else %}Тест: {{ entry.title }}{% endif %}{% endblock %}
+
+{% block content %}
+<div class="actions">
+  <a href="{% url 'courses:learning_detail' learning_course.id %}" class="btn btn-ghost">← К курсу</a>
+</div>
+
+<section class="page-head">
+  <h1 class="page-title">{% if entry.kind == "final_test" %}Итоговый тест курса{% else %}{{ entry.title }}{% endif %}</h1>
+  <p class="page-subtitle">{{ learning_course.title }}</p>
+</section>
+
+<section class="card">
+  <div class="card-body">
+    <h2 class="card-title">{% if entry.kind == "final_test" %}Итоговый тест{% else %}Тест{% endif %}</h2>
+    <p class="muted">Порог прохождения: {{ pass_threshold }}%</p>
+    <form method="post" class="stack">
+      {% csrf_token %}
+      {% for q in questions %}
+        <div class="card">
+          <div class="card-body">
+            <h3 class="card-title">{{ forloop.counter }}. {{ q.question_text }}</h3>
+            <label class="option"><input type="radio" name="q_{{ q.id }}" value="A"> {{ q.option_a }}</label>
+            <label class="option"><input type="radio" name="q_{{ q.id }}" value="B"> {{ q.option_b }}</label>
+            <label class="option"><input type="radio" name="q_{{ q.id }}" value="C"> {{ q.option_c }}</label>
+            {% if q.option_d %}
+              <label class="option"><input type="radio" name="q_{{ q.id }}" value="D"> {{ q.option_d }}</label>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+      <div class="actions">
+        <button type="submit" class="btn btn-primary">Завершить тест</button>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

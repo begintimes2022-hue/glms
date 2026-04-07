@@ -1,0 +1,15 @@
+{% extends "admin/change_form.html" %}
+
+{% block submit_buttons_top %}{% endblock %}
+
+{% block submit_buttons_bottom %}
+  <div class="submit-row" style="display: flex; justify-content: flex-start; padding: 18px 0 0; background: transparent; border: 0;">
+    <button
+      type="button"
+      class="btn btn-ghost"
+      onclick="if (window.history.length > 1) { window.history.back(); } else { window.location.href='{% url 'admin:courses_paymentorder_changelist' %}'; }"
+    >
+      Назад
+    </button>
+  </div>
+{% endblock %}

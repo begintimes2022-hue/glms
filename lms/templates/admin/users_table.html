@@ -1,0 +1,97 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<div class="tg-page">
+  <header class="tg-page-header">
+    <div>
+      <h1 class="tg-page-title">{{ title }}</h1>
+      <p class="tg-page-subtitle">Управление пользователями.</p>
+    </div>
+    <div class="tg-toolbar">
+      <a class="btn btn-ghost" href="{% url 'admin:users_table' %}">Сбросить фильтры</a>
+      <a class="btn btn-primary" href="{% url 'admin:auth_user_add' %}">Создать пользователя</a>
+    </div>
+  </header>
+
+  <section class="tg-card">
+    <h2 class="tg-card-title">Фильтры</h2>
+    <form method="get">
+      {% comment %} filters are in the table header {% endcomment %}
+      <div class="table-wrap" style="margin-top: 14px;">
+        <table class="tg-table">
+          <thead>
+            <tr>
+              <th>Логин</th>
+              <th>Эл. почта</th>
+              <th>Группа</th>
+              <th class="text-center">Админ</th>
+              <th class="text-center">Суперпользователь</th>
+              <th class="text-center">Активен</th>
+              <th class="text-right">Действия</th>
+            </tr>
+            <tr class="tg-filter-row">
+              <th><input type="text" name="username" value="{{ filters.username }}" placeholder="Логин"></th>
+              <th><input type="text" name="email" value="{{ filters.email }}" placeholder="Email"></th>
+              <th>
+                <select name="tariff_code">
+                  <option value="">Все группы</option>
+                  {% for g in groups_for_filter %}
+                    <option value="{{ g.name }}" {% if filters.tariff_code == g.name %}selected{% endif %}>
+                      {{ g.profile.public_name }} ({{ g.name }})
+                    </option>
+                  {% endfor %}
+                </select>
+              </th>
+              <th>
+                <select name="is_staff">
+                  <option value="">Все</option>
+                  <option value="yes" {% if filters.is_staff == "yes" %}selected{% endif %}>Да</option>
+                  <option value="no" {% if filters.is_staff == "no" %}selected{% endif %}>Нет</option>
+                </select>
+              </th>
+              <th>
+                <select name="is_superuser">
+                  <option value="">Все</option>
+                  <option value="yes" {% if filters.is_superuser == "yes" %}selected{% endif %}>Да</option>
+                  <option value="no" {% if filters.is_superuser == "no" %}selected{% endif %}>Нет</option>
+                </select>
+              </th>
+              <th>
+                <select name="is_active">
+                  <option value="">Все</option>
+                  <option value="yes" {% if filters.is_active == "yes" %}selected{% endif %}>Да</option>
+                  <option value="no" {% if filters.is_active == "no" %}selected{% endif %}>Нет</option>
+                </select>
+              </th>
+              <th class="text-right"><button class="btn btn-primary" type="submit">Применить</button></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in rows %}
+              <tr>
+                <td>{{ row.user.username }}</td>
+                <td>{{ row.user.email|default:"—" }}</td>
+                <td>{{ row.groups_str }}</td>
+                <td class="text-center">
+                  {% if row.user.is_staff %}<span class="tg-pill">Да</span>{% else %}<span class="chip chip-muted">Нет</span>{% endif %}
+                </td>
+                <td class="text-center">
+                  {% if row.user.is_superuser %}<span class="tg-pill">Да</span>{% else %}<span class="chip chip-muted">Нет</span>{% endif %}
+                </td>
+                <td class="text-center">
+                  {% if row.user.is_active %}<span class="chip chip-success">Да</span>{% else %}<span class="chip chip-danger">Нет</span>{% endif %}
+                </td>
+                <td class="text-right">
+                  <a class="btn btn-primary" href="{% url 'admin:auth_user_change' row.user.id %}">Открыть</a>
+                </td>
+              </tr>
+            {% empty %}
+              <tr><td colspan="7" class="text-center">Пользователи не найдены</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </form>
+  </section>
+</div>
+{% endblock %}

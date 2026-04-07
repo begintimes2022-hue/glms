@@ -1,0 +1,44 @@
+{% load static %}
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Вход в админку</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="{% static 'courses/logo_256.png' %}">
+  <link rel="stylesheet" href="{% static 'courses/ui.css' %}">
+</head>
+<body>
+  <div class="login-wrap">
+    <section class="login-card">
+      <div class="page-head">
+        <h1 class="page-title">Панель администрирования</h1>
+        <p class="page-subtitle">Используйте административный логин и пароль.</p>
+      </div>
+
+      {% if form.errors %}
+        <p class="alert alert-danger">Неверный логин или пароль.</p>
+      {% endif %}
+
+      <form action="{% url 'admin:login' %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next }}">
+        <div class="field">
+          <label for="{{ form.username.id_for_label }}">Логин</label>
+          {{ form.username }}
+        </div>
+        <div class="field">
+          <label for="{{ form.password.id_for_label }}">Пароль</label>
+          {{ form.password }}
+        </div>
+        <div class="actions">
+          <button type="submit" class="btn btn-primary">Войти</button>
+        </div>
+      </form>
+    </section>
+  </div>
+</body>
+</html>

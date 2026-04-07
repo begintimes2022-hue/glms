@@ -1,0 +1,83 @@
+{% extends "base_user.html" %}
+{% load course_content %}
+
+{% block title %}{{ entry.title }}{% endblock %}
+
+{% block content %}
+<div class="actions">
+  <a href="{% url 'courses:learning_detail' learning_course.id %}" class="btn btn-ghost">← К курсу</a>
+  {% if next_entry %}
+    <a href="{% url 'courses:learning_item' learning_course.id next_entry.sequence_index %}" class="btn btn-ghost">Следующий материал →</a>
+  {% endif %}
+</div>
+
+<section class="page-head">
+  <h1 class="page-title">{{ entry.title }}</h1>
+  <p class="page-subtitle">
+    {{ learning_course.title }}
+    {% if entry.section %} · {{ entry.section.title }}{% endif %}
+    {% if entry.module %} · {{ entry.module.title }}{% endif %}
+  </p>
+</section>
+
+{% if need_complete_notice %}
+  <p class="alert alert-danger">Сначала завершите предыдущий материал курса.</p>
+{% endif %}
+
+<section class="card">
+  <div class="card-body">
+    <div class="content-block">
+      {{ entry.lesson.content|lesson_markdown }}
+    </div>
+  </div>
+</section>
+
+<div class="actions">
+  <a href="{% url 'courses:learning_detail' learning_course.id %}" class="btn btn-ghost">← К курсу</a>
+  {% if next_entry %}
+    <a href="{% url 'courses:learning_item' learning_course.id next_entry.sequence_index %}" class="btn btn-ghost">Следующий материал →</a>
+  {% endif %}
+</div>
+
+<script>
+  (function () {
+    let sent = false;
+    const endpoint = "{% url 'courses:mark_learning_item_viewed' learning_course.id entry.sequence_index %}";
+    function getCookie(name) {
+      const cookies = document.cookie ? document.cookie.split(";") : [];
+      for (const cookie of cookies) {
+        const value = cookie.trim();
+        if (value.startsWith(name + "=")) {
+          return decodeURIComponent(value.slice(name.length + 1));
+        }
+      }
+      return "";
+    }
+    function hasReachedReadThreshold() {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop || 0;
+      const viewport = window.innerHeight || document.documentElement.clientHeight || 0;
+      const full = document.documentElement.scrollHeight || document.body.scrollHeight || 0;
+      const maxScrollable = Math.max(full - viewport, 1);
+      return (scrollTop / maxScrollable) >= 0.95;
+    }
+    async function markViewedIfNeeded() {
+      if (sent || !hasReachedReadThreshold()) return;
+      sent = true;
+      try {
+        await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": getCookie("csrftoken"),
+            "X-Requested-With": "XMLHttpRequest"
+          },
+          credentials: "same-origin"
+        });
+      } catch (e) {
+        sent = false;
+      }
+    }
+    window.addEventListener("scroll", markViewedIfNeeded, { passive: true });
+    window.addEventListener("load", markViewedIfNeeded);
+  })();
+</script>
+{% endblock %}

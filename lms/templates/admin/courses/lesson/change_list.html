@@ -1,0 +1,74 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="tg-page">
+  <header class="tg-page-header">
+    <div>
+      <h1 class="tg-page-title">Статьи</h1>
+      <p class="tg-page-subtitle">Управление статьями.</p>
+    </div>
+    <div class="tg-toolbar">
+      <a class="btn btn-ghost" href="{% url 'admin:courses_lesson_changelist' %}">Сбросить фильтры</a>
+      <a class="btn btn-primary" href="{% url 'admin:courses_lesson_add' %}">Создать статью</a>
+    </div>
+  </header>
+
+  <section class="tg-card">
+    <h2 class="tg-card-title">Статьи</h2>
+    <form method="get">
+      {% comment %} filters are in the table header {% endcomment %}
+      <div class="table-wrap" style="margin-top: 14px;">
+        <table class="tg-table">
+          <thead>
+            <tr>
+              <th>Название</th>
+              <th>Модуль</th>
+              <th>Раздел</th>
+              <th class="text-center">Порядок</th>
+              <th class="text-center">Финальный</th>
+              <th class="text-right">Действия</th>
+            </tr>
+            <tr class="tg-filter-row">
+              <th><input type="text" name="q" value="{{ cl.query }}" placeholder="Название"></th>
+              <th>
+                <select name="module_id">
+                  <option value="">Все модули</option>
+                  {% for module in modules_for_filter %}
+                    <option value="{{ module.id }}"{% if selected_module_id == module.id|stringformat:"s" %} selected{% endif %}>{{ module.title }}</option>
+                  {% endfor %}
+                </select>
+              </th>
+              <th>
+                <select name="section_id">
+                  <option value="">Все разделы</option>
+                  {% for section in sections_for_filter %}
+                    <option value="{{ section.id }}"{% if selected_section_id == section.id|stringformat:"s" %} selected{% endif %}>{{ section.title }}</option>
+                  {% endfor %}
+                </select>
+              </th>
+              <th></th>
+              <th></th>
+              <th class="text-right"><button class="btn btn-primary" type="submit">Применить</button></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for result in cl.result_list %}
+              <tr>
+                <td>{{ result.title }}</td>
+                <td>{{ result.course.title }}</td>
+                <td>{{ result.course.section.title|default:"—" }}</td>
+                <td class="text-center">{{ result.order }}</td>
+                <td class="text-center">{% if result.is_final %}<span class="tg-pill">Да</span>{% else %}<span class="chip chip-muted">Нет</span>{% endif %}</td>
+                <td class="text-right"><a class="btn btn-primary" href="{% url 'admin:courses_lesson_change' result.pk %}">Открыть</a></td>
+              </tr>
+            {% empty %}
+              <tr><td colspan="6" class="text-center">Статьи не найдены</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </form>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,127 @@
+{% extends "base_user.html" %}
+{% load course_content %}
+
+{% block title %}{{ lesson }}{% endblock %}
+
+{% block content %}
+<div class="actions">
+  <a href="{% url 'courses:detail' course.id %}" class="btn btn-ghost">← К модулю</a>
+  {% if next_lesson %}
+    <a href="{% url 'courses:lesson' course.id next_lesson.id %}" class="btn btn-ghost">Следующий материал →</a>
+  {% endif %}
+</div>
+
+<section class="page-head">
+  <h1 class="page-title">{{ lesson.title }}</h1>
+  <p class="page-subtitle">{{ course.title }}</p>
+</section>
+
+{% if need_view_notice %}
+  <p class="alert alert-danger">Закончите изучение текущего материала перед тем, как приступить к следующему.</p>
+{% endif %}
+
+<section class="card">
+  <div class="card-body">
+    <div class="content-block">
+      {{ lesson.content|lesson_markdown }}
+    </div>
+  </div>
+</section>
+
+<section class="card">
+  <div class="card-body">
+    <h2 class="card-title">Тест по материалу</h2>
+
+    {% if locked %}
+      <p class="alert alert-danger">Лимит попыток исчерпан. Повторите материал, затем начните новый цикл.</p>
+    {% endif %}
+
+    {% if questions_count and questions_count|add:"0" > 0 %}
+      <div class="metric-grid">
+        <div class="metric">
+          <p class="metric-label">Порог прохождения</p>
+          <p class="metric-value">{{ pass_threshold }}%</p>
+        </div>
+        <div class="metric">
+          <p class="metric-label">Текущий цикл</p>
+          <p class="metric-value">{{ current_round }}</p>
+        </div>
+        <div class="metric">
+          <p class="metric-label">Попыток осталось</p>
+          <p class="metric-value">{{ attempts_left }}</p>
+        </div>
+      </div>
+
+      {% if not locked %}
+        <div class="actions">
+          <a href="{% url 'courses:lesson_test' course.id lesson.id %}" class="btn btn-primary">Начать тест</a>
+        </div>
+      {% endif %}
+    {% else %}
+      <p class="alert alert-neutral">Для этого материала тест пока не добавлен.</p>
+    {% endif %}
+  </div>
+</section>
+
+<div class="actions">
+  <a href="{% url 'courses:detail' course.id %}" class="btn btn-ghost">← К модулю</a>
+  {% if next_lesson %}
+    <a href="{% url 'courses:lesson' course.id next_lesson.id %}" class="btn btn-ghost">Следующий материал →</a>
+  {% endif %}
+</div>
+
+{% if not next_lesson %}
+  <p class="page-subtitle">Это последний материал модуля.</p>
+{% endif %}
+
+<script>
+  (function () {
+    let sent = false;
+    const endpoint = "{% url 'courses:mark_lesson_viewed' course.id lesson.id %}";
+
+    function getCookie(name) {
+      const cookies = document.cookie ? document.cookie.split(";") : [];
+      for (const cookie of cookies) {
+        const value = cookie.trim();
+        if (value.startsWith(name + "=")) {
+          return decodeURIComponent(value.slice(name.length + 1));
+        }
+      }
+      return "";
+    }
+
+    function hasReachedReadThreshold() {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop || 0;
+      const viewport = window.innerHeight || document.documentElement.clientHeight || 0;
+      const full = document.documentElement.scrollHeight || document.body.scrollHeight || 0;
+      const maxScrollable = Math.max(full - viewport, 1);
+      const progress = scrollTop / maxScrollable;
+      return progress >= 0.95;
+    }
+
+    async function markViewedIfNeeded() {
+      if (sent || !hasReachedReadThreshold()) {
+        return;
+      }
+      sent = true;
+      try {
+        await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": getCookie("csrftoken"),
+            "X-Requested-With": "XMLHttpRequest"
+          },
+          credentials: "same-origin"
+        });
+      } catch (e) {
+        sent = false;
+      }
+    }
+
+    window.addEventListener("scroll", markViewedIfNeeded, { passive: true });
+    window.addEventListener("resize", markViewedIfNeeded);
+    document.addEventListener("DOMContentLoaded", markViewedIfNeeded);
+    markViewedIfNeeded();
+  })();
+</script>
+{% endblock %}

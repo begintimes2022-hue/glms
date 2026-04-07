@@ -1,0 +1,7 @@
+/* Sneat Core CSS */
+:root {
+  --bs-blue: #7367f0;
+  --primary-color: #7367f0;
+}
+body { font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+.navbar { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; }

@@ -1,0 +1,87 @@
+{% extends "base_user.html" %}
+
+{% block title %}{{ learning_course.title }}{% endblock %}
+
+{% block content %}
+<div class="actions">
+  <a href="{% url 'courses:learning_list' %}" class="btn btn-ghost">← Все курсы</a>
+</div>
+
+<section class="page-head">
+  <h1 class="page-title">{{ learning_course.title }}</h1>
+  <p class="page-subtitle">{{ learning_course.description }}</p>
+</section>
+
+<section class="card">
+  <div class="card-body">
+    {% if need_final_threshold_notice %}
+      <p class="alert alert-neutral">Итоговый тест откроется после того, как средний результат по тестам статей в этом курсе достигнет 85%.</p>
+    {% endif %}
+    {% if course_completed %}
+      <p class="alert alert-success">Курс завершён.</p>
+    {% else %}
+      <p class="alert alert-neutral">
+        Прогресс: <b>{{ completed_items }}/{{ total_items }}</b> ({{ progress_percent }}%).
+        Средний результат по тестам статей: <b>{{ article_tests_average }}%</b>.
+        Итоговый тест:
+        {% if not has_final_test %}
+          <b>не назначен</b>.
+        {% elif final_test_passed %}
+          <b>сдан</b>.
+        {% else %}
+          <b>не сдан</b>.
+        {% endif %}
+      </p>
+    {% endif %}
+  </div>
+</section>
+
+<section class="card">
+  <div class="card-body">
+    <h2 class="card-title">Материалы курса</h2>
+    <ul class="list">
+      {% for item in items %}
+        <li class="list-item">
+          <div class="card-head">
+            <div>
+              <h3 class="card-title">
+                {% if item.is_available %}
+                  <a href="{% url 'courses:learning_item' learning_course.id item.sequence_index %}">{{ item.sequence_index }}. {{ item.title }}</a>
+                {% else %}
+                  <span>{{ item.sequence_index }}. {{ item.title }}</span>
+                {% endif %}
+              </h3>
+              <p class="muted">
+                {% if item.kind == "final_test" %}
+                  Итоговый тест
+                {% elif item.kind == "test" %}
+                  Тест
+                {% else %}
+                  Статья
+                {% endif %}
+                {% if item.section %} · {{ item.section.title }}{% endif %}
+                {% if item.module %} · {{ item.module.title }}{% endif %}
+                {% if item.source_type == "module" %} · Из модуля целиком{% endif %}
+              </p>
+            </div>
+            <div class="lesson-meta">
+              {% if item.access_state == "completed" %}
+                <span class="status status-ok">Завершен</span>
+              {% elif item.access_state == "available" %}
+                <span class="status status-progress">Доступен</span>
+              {% else %}
+                <span class="status status-bad">Заблокирован</span>
+              {% endif %}
+              {% if item.is_final_test %}
+                <span class="status status-progress">Итоговый тест</span>
+              {% endif %}
+            </div>
+          </div>
+        </li>
+      {% empty %}
+        <li class="empty">В этом курсе пока нет материалов.</li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+{% endblock %}

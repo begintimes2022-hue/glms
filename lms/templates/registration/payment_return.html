@@ -1,0 +1,53 @@
+{% extends "base_user.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<section class="page-head">
+  <h1 class="page-title">{{ page_title }}</h1>
+  {% if page_subtitle %}
+    <p class="page-subtitle">{{ page_subtitle }}</p>
+  {% endif %}
+</section>
+
+<section class="card">
+  <div class="card-body">
+    {% if status == "success" %}
+      {% if already_paid %}
+        <p class="alert alert-neutral">Этот платёж уже был обработан ранее.</p>
+      {% else %}
+        <p class="alert alert-success">Оплата прошла успешно. Учётная запись активирована.</p>
+      {% endif %}
+
+      {% if order %}
+        <div class="metric-grid">
+          <div class="metric">
+            <p class="metric-label">Тариф</p>
+            <p class="metric-value">{{ order.tariff_group.profile.public_name }}</p>
+          </div>
+          <div class="metric">
+            <p class="metric-label">Заказ</p>
+            <p class="metric-value">{{ order.gateway_order_id|default:order.public_id }}</p>
+          </div>
+        </div>
+      {% endif %}
+
+      <div class="actions">
+        <a href="{% url 'courses:profile' %}" class="btn btn-primary">В личный кабинет</a>
+      </div>
+    {% elif status == "pending" %}
+      <p class="alert alert-danger">К сожалению, платеж не прошел.</p>
+      <p class="muted">Для повторной попытки оплаты войдите в личный кабинет под зарегистрированной учетной записью и нажмите "Повторить платеж".</p>
+      <div class="actions">
+        <a href="{% url 'courses:profile' %}" class="btn btn-primary">В личный кабинет</a>
+      </div>
+    {% else %}
+      <p class="alert alert-danger">К сожалению, платеж не прошел.</p>
+      <p class="muted">Для повторной попытки оплаты войдите в личный кабинет под зарегистрированной учетной записью и нажмите "Повторить платеж".</p>
+      <div class="actions">
+        <a href="{% url 'courses:profile' %}" class="btn btn-primary">В личный кабинет</a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

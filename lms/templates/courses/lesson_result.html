@@ -1,0 +1,51 @@
+{% extends "base_user.html" %}
+
+{% block title %}Результат теста{% endblock %}
+
+{% block content %}
+<div class="actions">
+  <a href="{% url 'courses:lesson' course.id lesson.id %}" class="btn btn-ghost">← К материалу</a>
+</div>
+
+<section class="page-head">
+  <h1 class="page-title">Результат теста</h1>
+  <p class="page-subtitle">{{ lesson.title }}</p>
+</section>
+
+<section class="card">
+  <div class="card-body">
+    {% if attempt %}
+      {% if attempt.passed %}
+        <p class="alert alert-success">Тест успешно пройден.</p>
+      {% else %}
+        <p class="alert alert-danger">Тест не пройден. Попробуйте снова в рамках текущего цикла.</p>
+      {% endif %}
+
+      <div class="metric-grid">
+        <div class="metric">
+          <p class="metric-label">Цикл</p>
+          <p class="metric-value">{{ current_round }}</p>
+        </div>
+        <div class="metric">
+          <p class="metric-label">Баллы</p>
+          <p class="metric-value">{{ attempt.score }}%</p>
+        </div>
+        <div class="metric">
+          <p class="metric-label">Верно</p>
+          <p class="metric-value">{{ attempt.correct }} / {{ attempt.total }}</p>
+        </div>
+        <div class="metric">
+          <p class="metric-label">Попыток осталось</p>
+          <p class="metric-value">{{ attempts_left }}</p>
+        </div>
+      </div>
+    {% else %}
+      <p class="empty">Попыток пока нет.</p>
+    {% endif %}
+
+    <div class="actions">
+      <a href="{% url 'courses:lesson' course.id lesson.id %}" class="btn btn-primary">Вернуться к материалу</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

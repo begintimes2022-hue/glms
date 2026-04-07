@@ -1,0 +1,40 @@
+{% extends "admin/base.html" %}
+{% load i18n %}
+
+{% block content %}
+<header class="page-head">
+  <h1 class="page-title">{{ app_list.0.name }}</h1>
+  <p class="page-subtitle">Модели и действия выбранного раздела.</p>
+</header>
+
+<div class="actions" style="margin-bottom: 12px;">
+  <a href="{% url 'admin:index' %}" class="btn btn-ghost">← Назад</a>
+</div>
+
+<div class="app-grid">
+  {% for app in app_list %}
+    <article class="app-card">
+      <h3>{{ app.name }}</h3>
+      <ul>
+        {% for model in app.models %}
+          <li>
+            {% if model.admin_url %}
+              <a href="{{ model.admin_url }}">{{ model.name }}</a>
+            {% else %}
+              <span>{{ model.name }}</span>
+            {% endif %}
+            <span>
+              {% if model.add_url %}
+                <a href="{{ model.add_url }}" class="btn btn-ghost">Добавить</a>
+              {% endif %}
+              {% if model.admin_url %}
+                <a href="{{ model.admin_url }}" class="btn btn-primary">Открыть</a>
+              {% endif %}
+            </span>
+          </li>
+        {% endfor %}
+      </ul>
+    </article>
+  {% endfor %}
+</div>
+{% endblock %}

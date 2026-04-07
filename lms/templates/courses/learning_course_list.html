@@ -1,0 +1,105 @@
+{% extends "base_user.html" %}
+
+{% block title %}Курсы{% endblock %}
+
+{% block content %}
+<section class="page-head">
+  <h1 class="page-title">Курсы</h1>
+  <p class="page-subtitle">Выберите курс и проходите материалы последовательно.</p>
+</section>
+
+{% if not course_access_restricted %}
+  <section class="card">
+    <div class="card-body">
+      <form method="get" class="actions">
+        <input
+          type="search"
+          name="q"
+          value="{{ search_query }}"
+          class="search-input"
+          placeholder="Поиск по заголовку и тексту материалов курса"
+          style="max-width: 420px;"
+        >
+        <button type="submit" class="btn btn-primary">Найти</button>
+        {% if search_query %}
+          <a href="{% url 'courses:learning_list' %}" class="btn btn-ghost">Сбросить</a>
+        {% endif %}
+      </form>
+    </div>
+  </section>
+{% endif %}
+
+<section class="stack">
+  {% if course_access_restricted %}
+    <div class="alert alert-neutral">{{ course_access_message }}</div>
+  {% endif %}
+
+  {% if search_query %}
+    <section class="card">
+      <div class="card-body">
+        <h2 class="card-title">Результаты поиска</h2>
+        {% if search_results %}
+          <ul class="list">
+            {% for result in search_results %}
+              <li class="list-item">
+                <div class="card-head">
+                  <div>
+                    <h3 class="card-title">
+                      <a href="{% url 'courses:learning_item' result.course.id result.item.sequence_index %}">{{ result.item.title }}</a>
+                    </h3>
+                    <p class="muted">
+                      {{ result.course.title }}
+                      {% if result.item.section %} · {{ result.item.section.title }}{% endif %}
+                      {% if result.item.module %} · {{ result.item.module.title }}{% endif %}
+                    </p>
+                    <p class="muted">{{ result.snippet|truncatechars:220 }}</p>
+                  </div>
+                </div>
+                <div class="actions">
+                  <a class="btn btn-primary" href="{% url 'courses:learning_item' result.course.id result.item.sequence_index %}">Открыть материал</a>
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <div class="empty">По вашему запросу ничего не найдено среди доступных материалов курса.</div>
+        {% endif %}
+      </div>
+    </section>
+  {% endif %}
+
+  {% for item in courses %}
+    <article class="card">
+      <div class="card-body">
+        <div class="card-head">
+          <div>
+            <h2 class="card-title">
+              <a href="{% url 'courses:learning_detail' item.course.id %}">{{ item.course.title }}</a>
+            </h2>
+            <p class="muted">{{ item.course.description|truncatechars:180 }}</p>
+          </div>
+          {% if item.status == "completed" %}
+            <span class="status status-ok">Пройден</span>
+          {% elif item.status == "in_progress" %}
+            <span class="status status-progress">В процессе</span>
+          {% else %}
+            <span class="status status-neutral">Не начат</span>
+          {% endif %}
+        </div>
+
+        <p class="muted">Прогресс: {{ item.completed_items }}/{{ item.total_items }} ({{ item.progress_percent }}%)</p>
+
+        <div class="actions">
+          <a class="btn btn-primary" href="{% url 'courses:learning_detail' item.course.id %}">Открыть курс</a>
+        </div>
+      </div>
+    </article>
+  {% empty %}
+    {% if course_access_restricted %}
+      <div class="empty">Список курсов временно недоступен.</div>
+    {% else %}
+      <div class="empty">Для вашего тарифа пока нет доступных курсов.</div>
+    {% endif %}
+  {% endfor %}
+</section>
+{% endblock %}

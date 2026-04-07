@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Genesis by Begintimes{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{% static 'courses/logo_256.png' %}">
+    <link rel="stylesheet" href="{% static 'courses/ui.css' %}">
+</head>
+<body>
+<div class="app-shell">
+    <header class="topbar">
+        <a href="{% url 'courses:profile' %}" class="brand">
+            <img class="brand-logo" src="{% static 'courses/logo_x1.png' %}" alt="Genesis by Begintimes">
+            <span>Genesis by Begintimes</span>
+        </a>
+
+        {% if user.is_authenticated %}
+            <div class="topbar-right">
+                <span class="user-pill">{{ user.username }}</span>
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Выйти</button>
+                </form>
+            </div>
+        {% endif %}
+    </header>
+
+    <div class="app-layout">
+        <aside class="sidebar">
+            <p class="sidebar-title">Навигация</p>
+            <ul class="nav-list">
+                {% url 'courses:profile' as profile_url %}
+                {% url 'courses:learning_list' as learning_courses_url %}
+                {% url 'courses:kb_list' as kb_url %}
+                <li>
+                    <a class="nav-link {% if active_menu == 'profile' %}active{% endif %}" href="{{ profile_url }}">Личный кабинет</a>
+                </li>
+                <li>
+                    <a class="nav-link {% if active_menu == 'learning_courses' %}active{% endif %}" href="{{ learning_courses_url }}">Мои курсы</a>
+                </li>
+                <li>
+                    <a class="nav-link {% if active_menu == 'kb' %}active{% endif %}" href="{{ kb_url }}">База знаний</a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="app-main">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</div>
+</body>
+</html>

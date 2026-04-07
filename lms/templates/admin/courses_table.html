@@ -1,0 +1,96 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<div class="tg-page">
+  <header class="tg-page-header">
+    <div>
+      <h1 class="tg-page-title">{{ title }}</h1>
+      <p class="tg-page-subtitle">Управление модулями.</p>
+    </div>
+    <div class="tg-toolbar">
+      <a class="btn btn-ghost" href="{% url 'admin:courses_table' %}">Сбросить фильтры</a>
+      <a class="btn btn-primary" href="{% url 'admin:courses_course_add' %}">Создать модуль</a>
+    </div>
+  </header>
+
+  <section class="tg-card">
+    <div class="tg-card-title" style="display:flex;align-items:center;justify-content:space-between;">
+      <span>Модули</span>
+    </div>
+    <form method="get">
+      {% comment %} filters are in the table header {% endcomment %}
+      <div class="table-wrap" style="margin-top: 14px;">
+        <table class="tg-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Название</th>
+              <th>Раздел</th>
+              <th>Автор</th>
+              <th>Назначенная группа</th>
+              <th class="text-center">Статьи</th>
+              <th class="text-center">Финальный тест</th>
+              <th class="text-center">Создан</th>
+              <th class="text-right">Действия</th>
+            </tr>
+            <tr class="tg-filter-row">
+              <th></th>
+              <th><input type="text" name="title" value="{{ filters.title }}" placeholder="Название"></th>
+              <th></th>
+              <th>
+                <select name="created_by_id">
+                  <option value="">Все авторы</option>
+                  {% for u in users_for_filter %}
+                    <option value="{{ u.id }}" {% if filters.created_by_id == u.id|stringformat:"s" %}selected{% endif %}>{{ u.username }}</option>
+                  {% endfor %}
+                </select>
+              </th>
+              <th>
+                <select name="tariff_code">
+                  <option value="">Все группы</option>
+                  {% for g in groups_for_filter %}
+                    <option value="{{ g.name }}" {% if filters.tariff_code == g.name %}selected{% endif %}>
+                      {{ g.profile.public_name }} ({{ g.name }})
+                    </option>
+                  {% endfor %}
+                </select>
+              </th>
+              <th><input type="number" min="0" name="lessons_min" value="{{ filters.lessons_min }}" placeholder="мин"></th>
+              <th>
+                <select name="has_final">
+                  <option value="">Любой</option>
+                  <option value="yes" {% if filters.has_final == "yes" %}selected{% endif %}>Да</option>
+                  <option value="no" {% if filters.has_final == "no" %}selected{% endif %}>Нет</option>
+                </select>
+              </th>
+              <th></th>
+              <th class="text-right"><button class="btn btn-primary" type="submit">Применить</button></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in rows %}
+              <tr>
+                <td>{{ row.course.id }}</td>
+                <td>{{ row.course.title }}</td>
+                <td><strong>{{ row.course.section.title|default:"—" }}</strong></td>
+                <td>{{ row.course.created_by.username }}</td>
+                <td>{{ row.groups_str }}</td>
+                <td class="text-center">{{ row.course.lessons_count }}</td>
+                <td class="text-center">
+                  {% if row.course.final_count > 0 %}<span class="tg-pill">Да</span>{% else %}<span class="chip chip-muted">Нет</span>{% endif %}
+                </td>
+                <td class="text-center">{{ row.course.created_at }}</td>
+                <td class="text-right">
+                  <a class="btn btn-primary" href="{% url 'admin:courses_course_change' row.course.id %}">Открыть</a>
+                </td>
+              </tr>
+            {% empty %}
+              <tr><td colspan="9" class="text-center">Модули не найдены</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </form>
+  </section>
+</div>
+{% endblock %}

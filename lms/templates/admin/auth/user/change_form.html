@@ -1,0 +1,18 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block extrahead %}
+  {{ block.super }}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+  {% include "admin/tg_change_form_light.html" %}
+  {% if not delete_url and original and request.user.is_staff %}
+    <div class="tg-light-actions" style="margin-top: 16px;">
+      <a class="tg-light-btn tg-light-btn-danger" href="{% url 'admin:auth_user_delete' original.pk %}">Удалить</a>
+    </div>
+  {% endif %}
+{% endblock %}

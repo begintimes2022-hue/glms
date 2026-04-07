@@ -1,0 +1,59 @@
+{% load i18n static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}LMS Админ{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'admin/css/base.css' %}">
+  <link rel="stylesheet" href="{% static 'admin/css/forms.css' %}">
+  <link rel="stylesheet" href="{% static 'admin/tailgrids.build.css' %}">
+  <link rel="stylesheet" href="{% static 'admin/custom_admin.css' %}">
+  {% block extrastyle %}{% endblock %}
+  {% block extrahead %}{{ media }}{% endblock %}
+</head>
+<body class="{% block bodyclass %}{% endblock %}">
+{% if user.is_authenticated %}
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <a href="{% url 'admin:index' %}" class="admin-brand">
+        <span class="admin-brand-dot"></span>
+        <span>LMS Админ</span>
+      </a>
+      <nav class="admin-nav">
+        <a href="{% url 'admin:index' %}">Панель управления</a>
+        <a href="{% url 'admin:users_table' %}">Пользователи</a>
+        <a href="{% url 'admin:auth_group_changelist' %}">Группы</a>
+        <a href="{% url 'admin:courses_progress' %}">Прогресс</a>
+      </nav>
+    </aside>
+{% endif %}
+
+  <main class="admin-main">
+    {% if user.is_authenticated %}
+      <div class="admin-topbar">
+        <p class="admin-topbar-title">Панель управления обучением</p>
+        <div class="admin-topbar-actions">
+          <span class="admin-user-badge">{{ user.username }}</span>
+          <form method="post" action="{% url 'admin:logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Выйти</button>
+          </form>
+        </div>
+      </div>
+    {% endif %}
+
+    <section class="admin-shell">
+      {% block content %}{% endblock %}
+    </section>
+  </main>
+
+{% if user.is_authenticated %}
+  </div>
+{% endif %}
+{% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,80 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+  <div class="actions" style="margin-bottom: 12px;">
+    <a href="{% url 'admin:courses_progress' %}" class="btn btn-ghost">← Назад к прогрессу</a>
+  </div>
+
+  <header class="page-head">
+    <h1 class="page-title">{{ title }}</h1>
+    <p class="page-subtitle">
+      Логин: <b>{{ user_obj.username }}</b> ·
+      Группы:
+      <b>
+        {% for g in user_obj.groups.all %}
+          {{ g.name }}{% if not forloop.last %}, {% endif %}
+        {% empty %}
+          —
+        {% endfor %}
+      </b> ·
+      Модуль: <b>{{ course.title }}</b> ·
+      Порог прохождения: <b>{{ pass_threshold }}%</b>
+    </p>
+  </header>
+
+  <div class="stack">
+    {% for row in history_rows %}
+      <section class="attempt-box">
+        <h4>{{ row.lesson.order }}. {{ row.lesson.title }}</h4>
+
+        {% if row.attempts %}
+          {% for a in row.attempts %}
+            <article class="attempt-box" style="margin-bottom: 10px;">
+              <div class="attempt-grid">
+                <div class="metric">
+                  <p class="metric-label">Раунд</p>
+                  <p class="metric-value">{{ a.retake_round }}</p>
+                </div>
+                <div class="metric">
+                  <p class="metric-label">Когда</p>
+                  <p class="metric-value">{{ a.created_at }}</p>
+                </div>
+                <div class="metric">
+                  <p class="metric-label">Результат</p>
+                  <p class="metric-value">{{ a.score }}%</p>
+                </div>
+                <div class="metric">
+                  <p class="metric-label">Статус</p>
+                  <p class="metric-value">
+                    {% if a.passed %}
+                      <span class="chip chip-success">ПРОЙДЕН</span>
+                    {% else %}
+                      <span class="chip chip-danger">НЕ ПРОЙДЕН</span>
+                    {% endif %}
+                  </p>
+                </div>
+              </div>
+
+              <ul class="answer-list">
+                {% for ans in a.answers.all %}
+                  <li>
+                    <b>{{ ans.question.question_text }}</b><br>
+                    выбран: <b>{{ ans.chosen_answer|default:"—" }}</b>,
+                    верный: <b>{{ ans.question.correct_answer }}</b>,
+                    {% if ans.is_correct %}
+                      <span class="chip chip-success">верно</span>
+                    {% else %}
+                      <span class="chip chip-danger">ошибка</span>
+                    {% endif %}
+                  </li>
+                {% endfor %}
+              </ul>
+            </article>
+          {% endfor %}
+        {% else %}
+          <p class="empty">Попыток пока нет.</p>
+        {% endif %}
+      </section>
+    {% endfor %}
+  </div>
+{% endblock %}

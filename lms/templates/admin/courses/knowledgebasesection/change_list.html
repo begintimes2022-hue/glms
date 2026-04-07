@@ -1,0 +1,61 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="tg-page">
+  <header class="tg-page-header">
+    <div>
+      <h1 class="tg-page-title">Разделы</h1>
+      <p class="tg-page-subtitle">Управление разделами базы знаний.</p>
+    </div>
+    <div class="tg-toolbar">
+      <a class="btn btn-ghost" href="{% url 'admin:courses_knowledgebasesection_changelist' %}">Сбросить фильтры</a>
+      <a class="btn btn-primary" href="{% url 'admin:courses_knowledgebasesection_add' %}">Создать раздел</a>
+    </div>
+  </header>
+
+  <section class="tg-card">
+    <h2 class="tg-card-title">Разделы</h2>
+    <form method="get">
+      <div class="table-wrap" style="margin-top: 14px;">
+        <table class="tg-table">
+          <thead>
+            <tr>
+              <th>Название</th>
+              <th>Слаг</th>
+              <th class="text-center">Модули</th>
+              <th class="text-center">Порядок</th>
+              <th class="text-center">Создан</th>
+              <th class="text-right">Действия</th>
+            </tr>
+            <tr class="tg-filter-row">
+              <th><input type="text" name="q" value="{{ cl.query }}" placeholder="Название или слаг"></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th class="text-right"><button class="btn btn-primary" type="submit">Применить</button></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for result in cl.result_list %}
+              <tr>
+                <td>{{ result.title }}</td>
+                <td>{{ result.slug }}</td>
+                <td class="text-center">{{ result.modules.count }}</td>
+                <td class="text-center">{{ result.order }}</td>
+                <td class="text-center">{{ result.created_at }}</td>
+                <td class="text-right">
+                  <a class="btn btn-primary" href="{% url 'admin:courses_knowledgebasesection_change' result.pk %}">Открыть</a>
+                </td>
+              </tr>
+            {% empty %}
+              <tr><td colspan="6" class="text-center">Разделы не найдены</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </form>
+  </section>
+</div>
+{% endblock %}

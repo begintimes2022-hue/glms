@@ -1,0 +1,41 @@
+{% extends "base_user.html" %}
+{% load course_content %}
+
+{% block title %}{{ lesson.title }}{% endblock %}
+
+{% block content %}
+<div class="actions">
+  <a href="{% url 'courses:kb_list' %}" class="btn btn-ghost">← К базе знаний</a>
+  {% if previous_lesson %}
+    <a href="{% url 'courses:kb_lesson_detail' previous_lesson.course_id previous_lesson.id %}" class="btn btn-ghost">← Предыдущая статья</a>
+  {% endif %}
+  {% if next_lesson %}
+    <a href="{% url 'courses:kb_lesson_detail' next_lesson.course_id next_lesson.id %}" class="btn btn-ghost">Следующая статья →</a>
+  {% endif %}
+</div>
+
+<section class="page-head">
+  <h1 class="page-title">{{ lesson.title }}</h1>
+  <p class="page-subtitle">
+    {% if section %}{{ section.title }} · {% endif %}{{ course.title }}
+  </p>
+</section>
+
+<section class="card">
+  <div class="card-body">
+    <div class="content-block">
+      {{ lesson.content|lesson_markdown_kb }}
+    </div>
+  </div>
+</section>
+
+<div class="actions">
+  <a href="{% url 'courses:kb_list' %}" class="btn btn-ghost">← К базе знаний</a>
+  {% if previous_lesson %}
+    <a href="{% url 'courses:kb_lesson_detail' previous_lesson.course_id previous_lesson.id %}" class="btn btn-ghost">← Предыдущая статья</a>
+  {% endif %}
+  {% if next_lesson %}
+    <a href="{% url 'courses:kb_lesson_detail' next_lesson.course_id next_lesson.id %}" class="btn btn-ghost">Следующая статья →</a>
+  {% endif %}
+</div>
+{% endblock %}

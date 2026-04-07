@@ -1,0 +1,92 @@
+{% load static %}
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Регистрация</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="{% static 'courses/logo_256.png' %}">
+  <link rel="stylesheet" href="{% static 'courses/ui.css' %}">
+</head>
+<body>
+  <div class="login-wrap">
+    <section class="login-card">
+      <div class="page-head">
+        <h1 class="page-title">Регистрация в LMS</h1>
+        <p class="page-subtitle">Заполните данные для создания аккаунта.</p>
+      </div>
+
+      {% if form.non_field_errors %}
+        {% for error in form.non_field_errors %}
+          <p class="alert alert-danger">{{ error }}</p>
+        {% endfor %}
+      {% endif %}
+
+      <form method="post">
+        {% csrf_token %}
+        <div class="field">
+          <label for="{{ form.username.id_for_label }}">Логин</label>
+          {{ form.username }}
+          {% for error in form.username.errors %}
+            <p class="alert alert-danger">{{ error }}</p>
+          {% endfor %}
+          {% if form.username.help_text %}
+            <p class="field-help">{{ form.username.help_text|safe }}</p>
+          {% else %}
+            <p class="field-help">Требования к логину указаны в контракте API.</p>
+          {% endif %}
+        </div>
+        <div class="field">
+          <label for="{{ form.first_name.id_for_label }}">Имя</label>
+          {{ form.first_name }}
+          {% for error in form.first_name.errors %}
+            <p class="alert alert-danger">{{ error }}</p>
+          {% endfor %}
+        </div>
+        <div class="field">
+          <label for="{{ form.last_name.id_for_label }}">Фамилия</label>
+          {{ form.last_name }}
+          {% for error in form.last_name.errors %}
+            <p class="alert alert-danger">{{ error }}</p>
+          {% endfor %}
+        </div>
+        <div class="field">
+          <label for="{{ form.email.id_for_label }}">Электронная почта</label>
+          {{ form.email }}
+          {% for error in form.email.errors %}
+            <p class="alert alert-danger">{{ error }}</p>
+          {% endfor %}
+        </div>
+        <div class="field">
+          <label for="{{ form.tariff_code.id_for_label }}">Тариф</label>
+          {{ form.tariff_code }}
+          {% for error in form.tariff_code.errors %}
+            <p class="alert alert-danger">{{ error }}</p>
+          {% endfor %}
+        </div>
+        <div class="field">
+          <label for="{{ form.password1.id_for_label }}">Пароль</label>
+          {{ form.password1 }}
+          {% for error in form.password1.errors %}
+            <p class="alert alert-danger">{{ error }}</p>
+          {% endfor %}
+          <p class="field-help">Минимум 10 символов, хотя бы 1 буква, 1 цифра и 1 спецсимвол.</p>
+        </div>
+        <div class="field">
+          <label for="{{ form.password2.id_for_label }}">Пароль еще раз</label>
+          {{ form.password2 }}
+          {% for error in form.password2.errors %}
+            <p class="alert alert-danger">{{ error }}</p>
+          {% endfor %}
+        </div>
+        <div class="actions">
+          <button type="submit" class="btn btn-primary">Создать аккаунт и перейти к оплате</button>
+        </div>
+      </form>
+    </section>
+  </div>
+</body>
+</html>

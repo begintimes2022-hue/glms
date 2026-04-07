@@ -1,0 +1,58 @@
+{% extends "base_user.html" %}
+
+{% block title %}Тест: {{ lesson.title }}{% endblock %}
+
+{% block content %}
+<div class="actions">
+  <a href="{% url 'courses:lesson' course.id lesson.id %}" class="btn btn-ghost">← К материалу</a>
+</div>
+
+<section class="page-head">
+  <h1 class="page-title">Тест: {{ lesson.title }}</h1>
+  <p class="page-subtitle">
+    Порог {{ pass_threshold }}% · Цикл {{ current_round }} · Осталось попыток {{ attempts_left }}
+  </p>
+</section>
+
+<section class="card">
+  <div class="card-body">
+    <form method="post" class="stack">
+      {% csrf_token %}
+
+      {% for q in questions %}
+        <fieldset class="question">
+          <legend>{{ forloop.counter }}. {{ q.question_text }}</legend>
+
+          <label class="option">
+            <input type="radio" name="q_{{ q.id }}" value="A">
+            <span>A) {{ q.option_a }}</span>
+          </label>
+
+          <label class="option">
+            <input type="radio" name="q_{{ q.id }}" value="B">
+            <span>B) {{ q.option_b }}</span>
+          </label>
+
+          <label class="option">
+            <input type="radio" name="q_{{ q.id }}" value="C">
+            <span>C) {{ q.option_c }}</span>
+          </label>
+
+          {% if q.option_d %}
+            <label class="option">
+              <input type="radio" name="q_{{ q.id }}" value="D">
+              <span>D) {{ q.option_d }}</span>
+            </label>
+          {% endif %}
+        </fieldset>
+      {% empty %}
+        <p class="empty">В этом тесте пока нет вопросов.</p>
+      {% endfor %}
+
+      <div class="actions">
+        <button type="submit" class="btn btn-primary">Завершить тест</button>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

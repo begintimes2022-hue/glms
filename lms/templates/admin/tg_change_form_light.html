@@ -1,0 +1,78 @@
+{% load i18n admin_urls static %}
+
+<div class="tg-light-shell">
+  <div class="tg-light-header">
+    <div>
+      <p class="tg-light-eyebrow">{% if add %}Создание{% else %}Редактирование{% endif %}</p>
+      <h1 class="tg-light-title">{{ opts.verbose_name|capfirst }}</h1>
+      <p class="tg-light-subtitle">Заполните поля ниже.</p>
+    </div>
+  </div>
+
+  <form method="post" {% if has_file_field %}enctype="multipart/form-data"{% endif %} class="tg-light-form" novalidate>
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div class="tg-light-alert">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+
+    {% for fieldset in adminform %}
+      <div class="tg-light-card">
+        {% if fieldset.name %}
+          <h2 class="tg-light-card-title">{{ fieldset.name }}</h2>
+        {% endif %}
+
+        {% for line in fieldset %}
+          <div class="tg-light-grid">
+            {% for field in line %}
+              <div class="tg-light-field">
+                <label class="tg-light-label" for="{{ field.field.id_for_label }}">
+                  {{ field.field.label }}{% if field.field.field.required %}<span class="tg-light-required">*</span>{% endif %}
+                </label>
+                <div class="tg-light-input">
+                  {{ field.field }}
+                </div>
+                {% if field.field.help_text %}
+                  <p class="tg-light-help">{{ field.field.help_text|safe }}</p>
+                {% endif %}
+                {% if field.field.errors %}
+                  <div class="tg-light-error">{{ field.field.errors }}</div>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+
+    {% if inline_admin_formsets %}
+      {% for inline_admin_formset in inline_admin_formsets %}
+        {% include inline_admin_formset.opts.template %}
+      {% endfor %}
+    {% endif %}
+
+    <div class="tg-light-actions">
+      {% if show_save %}
+        <button type="submit" name="_save" class="tg-light-btn tg-light-btn-primary">Сохранить</button>
+      {% else %}
+        <button type="submit" name="_save" class="tg-light-btn tg-light-btn-primary">Сохранить</button>
+      {% endif %}
+      {% if show_save_and_continue %}
+        <button type="submit" name="_continue" class="tg-light-btn tg-light-btn-outline">Сохранить и продолжить редактирование</button>
+      {% endif %}
+      {% if show_save_and_add_another %}
+        <button type="submit" name="_addanother" class="tg-light-btn tg-light-btn-ghost">Сохранить и добавить еще</button>
+      {% endif %}
+      {% if show_delete_link and change and original %}
+        {% if delete_url %}
+          <a href="{{ delete_url }}" class="tg-light-btn tg-light-btn-danger">Удалить</a>
+        {% else %}
+          {% url opts|admin_urlname:'delete' original.pk|admin_urlquote as computed_delete_url %}
+          <a href="{{ computed_delete_url }}" class="tg-light-btn tg-light-btn-danger">Удалить</a>
+        {% endif %}
+      {% endif %}
+    </div>
+  </form>
+</div>

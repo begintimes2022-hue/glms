@@ -1,0 +1,1642 @@
+:root {
+  --admin-bg: #f1f5f9;
+  --admin-surface: #ffffff;
+  --admin-surface-soft: #f8fafc;
+  --admin-text: #0f172a;
+  --admin-muted: #64748b;
+  --admin-line: #dbe3ef;
+  --admin-primary: #2563eb;
+  --admin-primary-strong: #1d4ed8;
+  --admin-success: #16a34a;
+  --admin-danger: #dc2626;
+  --admin-warning: #d97706;
+  --admin-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  font-family: "Manrope", "Segoe UI", sans-serif;
+  color: var(--admin-text);
+  background:
+    radial-gradient(900px 500px at 0% -15%, #dbeafe 0%, transparent 60%),
+    radial-gradient(800px 500px at 100% -20%, #e0e7ff 0%, transparent 58%),
+    var(--admin-bg);
+}
+
+a {
+  color: var(--admin-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--admin-primary-strong);
+}
+
+.admin-layout {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+}
+
+.admin-sidebar {
+  border-right: 1px solid var(--admin-line);
+  background: rgba(255, 255, 255, 0.84);
+  backdrop-filter: blur(6px);
+  padding: 18px 14px;
+}
+
+.admin-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  color: var(--admin-text);
+  margin-bottom: 16px;
+}
+
+.admin-brand-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--admin-primary), #60a5fa);
+}
+
+.admin-nav {
+  display: grid;
+  gap: 8px;
+}
+
+.admin-nav a {
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 10px 12px;
+  color: var(--admin-text);
+  font-weight: 700;
+}
+
+.admin-nav a:hover {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.admin-main {
+  padding: 16px;
+}
+
+.admin-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  border: 1px solid var(--admin-line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: var(--admin-shadow);
+  padding: 12px 14px;
+}
+
+.admin-topbar-title {
+  margin: 0;
+  font-size: 15px;
+  color: var(--admin-muted);
+}
+
+.admin-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-user-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid #d9e6f7;
+  border-radius: 12px;
+  background: #f7fbff;
+  color: #35537a;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.admin-shell {
+  border: 1px solid var(--admin-line);
+  border-radius: 16px;
+  background: var(--admin-surface);
+  box-shadow: var(--admin-shadow);
+  padding: 18px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  padding: 8px 12px;
+}
+
+.btn-primary {
+  background: var(--admin-primary);
+  color: #fff !important;
+}
+
+.btn-primary:hover {
+  background: var(--admin-primary-strong);
+  color: #fff !important;
+}
+
+.btn-primary:visited,
+.btn-primary:active,
+.btn-primary:focus {
+  color: #fff !important;
+}
+
+.btn-ghost {
+  border-color: var(--admin-line);
+  background: var(--admin-surface);
+  color: var(--admin-text);
+}
+
+.btn-ghost:hover {
+  background: var(--admin-surface-soft);
+}
+
+.btn-danger {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.btn-danger:hover {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.page-head {
+  margin: 0 0 16px;
+}
+
+.page-title {
+  margin: 0;
+  font-size: clamp(20px, 2.5vw, 30px);
+  line-height: 1.15;
+}
+
+.page-subtitle {
+  margin: 8px 0 0;
+  color: var(--admin-muted);
+}
+
+.app-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 12px;
+}
+
+.app-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  background: #ffffff;
+  padding: 18px;
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.08),
+    0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+.app-card h3 {
+  margin: 0 0 12px;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.app-card ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+}
+
+.app-card li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fafafa;
+  padding: 10px 12px;
+}
+
+.app-card li span:first-child {
+  color: #111827;
+  font-weight: 600;
+}
+
+.app-card a {
+  color: #1f2937;
+}
+
+.app-card a:hover {
+  color: #1d4ed8;
+}
+
+/* Material-ish buttons for dashboard cards */
+.app-card .btn {
+  border-radius: 10px;
+  font-weight: 600;
+  padding: 7px 12px;
+}
+
+.app-card .btn-primary {
+  background: #2563eb;
+  box-shadow: 0 1px 2px rgba(37, 99, 235, 0.25);
+}
+
+.app-card .btn-ghost {
+  border-color: #e5e7eb;
+  background: #fff;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 4px 9px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.chip-success {
+  background: #ecfdf3;
+  color: #15803d;
+}
+
+.chip-muted {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.chip-danger {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.table-wrap {
+  width: 100%;
+  overflow: auto;
+  border: 1px solid var(--admin-line);
+  border-radius: 12px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 840px;
+  background: #fff;
+}
+
+.table th,
+.table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #eef2f7;
+  text-align: left;
+  vertical-align: top;
+  font-size: 13px;
+}
+
+/* Tailgrids-inspired admin forms (User/Group) */
+.tg-shell {
+  border-radius: 20px;
+  padding: 24px;
+  background: #0b1120;
+  color: #e5e7eb;
+  border: 1px solid #1f2937;
+  box-shadow: 0 24px 50px rgba(15, 23, 42, 0.35);
+  font-family: "DM Sans", "Manrope", sans-serif;
+}
+
+.tg-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.tg-eyebrow {
+  margin: 0 0 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.tg-title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: #f9fafb;
+}
+
+.tg-subtitle {
+  margin: 6px 0 0;
+  color: #9ca3af;
+}
+
+.tg-form .tg-card {
+  border: 1px solid #1f2937;
+  border-radius: 16px;
+  background: #111827;
+  padding: 18px;
+  margin-bottom: 16px;
+}
+
+.tg-card-title {
+  margin: 0 0 12px;
+  font-size: 16px;
+  color: #f3f4f6;
+}
+
+.tg-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.tg-field {
+  display: grid;
+  gap: 6px;
+}
+
+.tg-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e5e7eb;
+}
+
+.tg-required {
+  color: #ef4444;
+  margin-left: 4px;
+}
+
+.tg-input input,
+.tg-input select,
+.tg-input textarea,
+.tg-input .vTextField,
+.tg-input .vLargeTextField {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid #374151;
+  background: #0f172a;
+  color: #f9fafb;
+  padding: 10px 12px;
+  font-size: 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tg-input input[type="checkbox"],
+.tg-input input[type="radio"] {
+  width: auto;
+  accent-color: #3758f9;
+}
+
+.tg-input select[multiple] {
+  min-height: 140px;
+}
+
+.tg-input .selector,
+.tg-input .selector-available,
+.tg-input .selector-chosen {
+  width: 100%;
+}
+
+.tg-input .selector {
+  border: 1px solid #374151;
+  border-radius: 12px;
+  background: #0f172a;
+  padding: 10px;
+  color: #e5e7eb;
+}
+
+.tg-input .selector h2 {
+  color: #e5e7eb;
+  background: transparent;
+  border: none;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.tg-input .selector select {
+  background: #0b1120;
+  color: #e5e7eb;
+  border: 1px solid #374151;
+}
+
+.tg-input .selector .selector-filter {
+  border-color: #374151;
+}
+
+.tg-input .selector .selector-available,
+.tg-input .selector .selector-chosen {
+  border: none;
+}
+
+.tg-input input:focus,
+.tg-input select:focus,
+.tg-input textarea:focus {
+  outline: none;
+  border-color: #3758f9;
+  box-shadow: 0 0 0 3px rgba(55, 88, 249, 0.2);
+}
+
+.tg-help {
+  margin: 0;
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.tg-error {
+  color: #f87171;
+  font-size: 12px;
+}
+
+.tg-alert {
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.12);
+  color: #fca5a5;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.tg-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.tg-btn {
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tg-btn-primary {
+  background: #3758f9;
+  color: #fff;
+}
+
+.tg-btn-primary:hover {
+  background: #2237ee;
+}
+
+.tg-btn-outline {
+  background: transparent;
+  border-color: #1f2937;
+  color: #e5e7eb;
+}
+
+.tg-btn-outline:hover {
+  border-color: #374151;
+  color: #fff;
+}
+
+.tg-btn-ghost {
+  background: #111827;
+  border-color: #1f2937;
+  color: #9ca3af;
+}
+
+.tg-btn-ghost:hover {
+  color: #e5e7eb;
+}
+
+.tg-btn-danger {
+  background: #dc2626;
+  color: #fff;
+}
+
+.tg-btn-eq {
+  min-width: 96px;
+  justify-content: center;
+}
+
+.tg-table td.text-right .btn {
+  min-width: 96px;
+  justify-content: center;
+  display: inline-flex;
+}
+
+.tg-table td.text-right {
+  white-space: nowrap;
+}
+
+.delete-confirmation .submit-row {
+  display: flex !important;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.delete-confirmation form .cancel-link {
+  display: inline-flex !important;
+  align-items: center;
+  width: auto !important;
+  max-width: none !important;
+  white-space: nowrap;
+  float: none !important;
+  height: auto !important;
+  line-height: 1.2 !important;
+}
+
+.delete-confirmation form input[type="submit"],
+.delete-confirmation form a.button,
+.delete-confirmation form .button {
+  float: none !important;
+  width: auto;
+  max-width: none;
+  height: auto;
+  line-height: 1.2;
+}
+
+/* Light admin form theme (Groups) */
+.tg-light-shell {
+  border-radius: 20px;
+  padding: 24px;
+  background: #ffffff;
+  color: #0f172a;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+  font-family: "DM Sans", "Manrope", sans-serif;
+}
+
+.tg-light-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.tg-light-eyebrow {
+  margin: 0 0 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 11px;
+  color: #64748b;
+}
+
+.tg-light-title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.tg-light-subtitle {
+  margin: 6px 0 0;
+  color: #64748b;
+}
+
+.tg-light-form .tg-light-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  background: #f8fafc;
+  padding: 18px;
+  margin-bottom: 16px;
+}
+
+.tg-light-card-title {
+  margin: 0 0 12px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.tg-light-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.tg-light-field {
+  display: grid;
+  gap: 6px;
+}
+
+.tg-light-field.field-permissions {
+  margin-top: 16px;
+}
+
+.tg-light-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.tg-light-required {
+  color: #ef4444;
+  margin-left: 4px;
+}
+
+.tg-light-input input,
+.tg-light-input select,
+.tg-light-input textarea,
+.tg-light-input .vTextField,
+.tg-light-input .vLargeTextField {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid #cbd5f5;
+  background: #ffffff;
+  color: #0f172a;
+  padding: 10px 12px;
+  font-size: 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  height: 44px;
+}
+
+.tg-light-input input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border-radius: 4px;
+  border: 1px solid #cbd5f5;
+  accent-color: #2563eb;
+}
+
+
+.tg-light-input input[type="checkbox"] + label,
+.tg-light-input label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.tg-light-input input[type="checkbox"] + label {
+  margin-left: 8px;
+  font-weight: 500;
+  color: #334155;
+}
+
+.tg-light-input input:focus,
+.tg-light-input select:focus,
+.tg-light-input textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.tg-light-help {
+  margin: 0;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.tg-light-error {
+  color: #b91c1c;
+  font-size: 12px;
+}
+
+.tg-light-alert {
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.08);
+  color: #b91c1c;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.tg-light-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.tg-light-btn {
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tg-light-btn-primary {
+  background: #2563eb;
+  color: #fff;
+  box-shadow: 0 1px 2px rgba(37, 99, 235, 0.2);
+}
+
+.tg-light-btn-outline {
+  background: #fff;
+  border-color: #cbd5f5;
+  color: #1f2937;
+}
+
+.tg-light-btn-ghost {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+  color: #475569;
+}
+
+.tg-light-btn-danger {
+  background: #dc2626;
+  color: #fff;
+}
+
+/* Group profile inline (material-ish) */
+.tg-inline-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  background: #ffffff;
+  padding: 18px;
+}
+
+.tg-inline-title {
+  margin: 0 0 12px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.tg-inline-subtitle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0;
+  padding: 0 0 10px;
+  font-size: 14px;
+  color: #0f172a;
+}
+
+.tg-inline-delete {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.tg-inline-body .fieldset.module {
+  border: none;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+}
+
+.tg-inline-body .form-row {
+  border-bottom: 1px solid #e5e7eb;
+  padding: 12px 0;
+}
+
+.tg-inline-body .form-row:last-child {
+  border-bottom: none;
+}
+
+.tg-inline-body .form-row label {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.tg-inline-body .form-row .help,
+.tg-inline-body .form-row .helptext {
+  color: #64748b;
+}
+
+.tg-light-shell .selector,
+.tg-light-shell .selector-available,
+.tg-light-shell .selector-chosen {
+  width: 100%;
+}
+
+.tg-light-shell .selector {
+  display: none !important;
+}
+
+body.app-courses.model-learningcourse .tg-light-shell .tg-course-items-inline,
+body.app-courses.model-learningcourse .tg-light-shell .inline-group,
+body.app-courses.model-learningcourse .tg-light-shell #items-group {
+  margin-top: 18px;
+  border: 1px solid var(--admin-line);
+  border-radius: 16px;
+  background: var(--admin-surface);
+  overflow: hidden;
+  box-shadow: var(--admin-shadow);
+}
+
+body.app-courses.model-learningcourse .tg-light-shell .tg-course-items-inline .tabular.inline-related,
+body.app-courses.model-learningcourse .tg-light-shell .tabular.inline-related,
+body.app-courses.model-learningcourse .tg-light-shell #items-group .tabular.inline-related {
+  border: 0;
+  border-radius: 16px;
+  background: transparent;
+  overflow: hidden;
+  box-shadow: none;
+}
+
+body.app-courses.model-learningcourse .tg-light-shell .tg-course-items-inline fieldset.module,
+body.app-courses.model-learningcourse .tg-light-shell .tabular.inline-related fieldset.module,
+body.app-courses.model-learningcourse .tg-light-shell #items-group fieldset.module {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+body.app-courses.model-learningcourse .tg-light-shell .tg-course-items-inline .inline-heading,
+body.app-courses.model-learningcourse .tg-light-shell .tabular.inline-related .inline-heading,
+body.app-courses.model-learningcourse .tg-light-shell #items-group .inline-heading {
+  margin: 0;
+  padding: 16px 18px;
+  background: #4d84a3;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+}
+
+body.app-courses.model-learningcourse .tg-light-shell .tabular.inline-related table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+body.app-courses.model-learningcourse .tg-light-shell .tabular.inline-related thead th {
+  padding: 10px 8px;
+  background: #fff;
+  color: #516b8c;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--admin-line);
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.25;
+}
+
+body.app-courses.model-learningcourse .tg-light-shell .tabular.inline-related tbody td {
+  padding: 8px 6px;
+  border-bottom: 1px solid var(--admin-line);
+  background: #fff;
+  vertical-align: top;
+  overflow: hidden;
+}
+
+body.app-courses.model-learningcourse .tg-light-shell .tabular.inline-related tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+body.app-courses.model-learningcourse .tg-light-shell .tabular.inline-related td.original,
+body.app-courses.model-learningcourse .tg-light-shell .tabular.inline-related th.original {
+  display: none;
+}
+
+body.app-courses.model-learningcourse .tg-light-shell .tabular.inline-related td.delete {
+  width: 4%;
+  text-align: center;
+}
+
+body.app-courses.model-learningcourse .tg-light-shell .tabular.inline-related .related-widget-wrapper {
+  display: block;
+}
+
+body.app-courses.model-learningcourse .tg-light-shell .tabular.inline-related select,
+body.app-courses.model-learningcourse .tg-light-shell .tabular.inline-related input[type="text"],
+body.app-courses.model-learningcourse .tg-light-shell .tabular.inline-related input[type="number"] {
+  width: 100%;
+  min-height: 38px;
+  padding: 7px 9px;
+  border: 1px solid #cfe0f5;
+  border-radius: 12px;
+  background: #fff;
+  box-sizing: border-box;
+  min-width: 0;
+  font-size: 12px;
+}
+
+body.app-courses.model-learningcourse .tg-light-shell .tabular.inline-related .column-order_index,
+body.app-courses.model-learningcourse .tg-light-shell .tabular.inline-related .field-order_index {
+  width: 7%;
+}
+
+body.app-courses.model-learningcourse .tg-light-shell .tabular.inline-related .column-item_type,
+body.app-courses.model-learningcourse .tg-light-shell .tabular.inline-related .field-item_type {
+  width: 12%;
+}
+
+body.app-courses.model-learningcourse .tg-light-shell .tabular.inline-related .column-section,
+body.app-courses.model-learningcourse .tg-light-shell .tabular.inline-related .field-section {
+  width: 18%;
+}
+
+body.app-courses.model-learningcourse .tg-light-shell .tabular.inline-related .column-module,
+body.app-courses.model-learningcourse .tg-light-shell .tabular.inline-related .field-module {
+  width: 20%;
+}
+
+body.app-courses.model-learningcourse .tg-light-shell .tabular.inline-related .column-lesson,
+body.app-courses.model-learningcourse .tg-light-shell .tabular.inline-related .field-lesson {
+  width: 31%;
+}
+
+body.app-courses.model-learningcourse .tg-light-shell .tabular.inline-related .column-is_final_test,
+body.app-courses.model-learningcourse .tg-light-shell .tabular.inline-related .field-is_final_test {
+  width: 8%;
+  text-align: center;
+}
+
+body.app-courses.model-learningcourse .tg-light-shell .tabular.inline-related .field-is_final_test input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  min-height: 18px;
+  padding: 0;
+  margin: 8px auto 0;
+}
+
+body.app-courses.model-learningcourse .tg-light-shell .tg-course-items-inline .add-row,
+body.app-courses.model-learningcourse .tg-light-shell .inline-group .add-row,
+body.app-courses.model-learningcourse .tg-light-shell #items-group .add-row {
+  margin: 0;
+  padding: 12px 16px 14px;
+  border-top: 1px solid var(--admin-line);
+  background: #fff;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+}
+
+body.app-courses.model-learningcourse .tg-light-shell .inline-group .add-row a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid #d9e6f7;
+  border-radius: 12px;
+  background: #f7fbff;
+  color: #35537a;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.tg-dual-hidden {
+  display: none;
+}
+
+.tg-dual {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.tg-dual-col {
+  display: grid;
+  gap: 8px;
+}
+
+.tg-dual-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.tg-dual-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748b;
+}
+
+.tg-dual-select {
+  width: 100%;
+  border: 1px solid #cbd5f5;
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 8px;
+  min-height: 220px;
+  font-size: 13px;
+}
+
+.tg-dual-btn {
+  justify-self: start;
+  border-radius: 8px;
+  border: 1px solid #cbd5f5;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 700;
+  padding: 3px 8px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.tg-dual-btn-danger {
+  background: #ef4444;
+  border-color: #ef4444;
+}
+
+.tg-light-shell .field-permissions select[name="permissions"],
+.tg-light-shell .field-permissions .selector,
+.tg-light-shell .field-permissions .help,
+.tg-light-shell .field-permissions .helptext {
+  display: none !important;
+}
+
+.tg-light-shell .field-permissions .tg-light-input input {
+  display: none !important;
+}
+
+.tg-light-shell .field-permissions .tg-light-input {
+  display: none !important;
+}
+
+.tg-light-shell .selector h2 {
+  color: #475569;
+  background: transparent;
+  border: none;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.tg-light-shell .selector select {
+  background: #ffffff;
+  color: #0f172a;
+  border: 1px solid #cbd5f5;
+}
+
+.tg-light-shell .selector .selector-filter {
+  border-color: #cbd5f5;
+}
+
+.tg-light-shell .selector .selector-available,
+.tg-light-shell .selector .selector-chosen {
+  border: none;
+}
+
+
+.table th {
+  background: var(--admin-surface-soft);
+  color: var(--admin-muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* Tailgrids-inspired dashboard/list pages (light) */
+.tg-page {
+  display: grid;
+  gap: 18px;
+}
+
+.tg-page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.tg-page-title {
+  margin: 0;
+  font-size: clamp(22px, 2.4vw, 30px);
+  font-weight: 700;
+}
+
+.tg-page-subtitle {
+  margin: 6px 0 0;
+  color: var(--admin-muted);
+}
+
+.tg-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.tg-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: 1px solid var(--admin-line);
+  border-radius: 12px;
+  padding: 8px 12px;
+  min-width: 240px;
+}
+
+.tg-search input {
+  border: none;
+  outline: none;
+  font-size: 13px;
+  width: 100%;
+}
+
+.tg-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.tg-stat-card {
+  border: 1px solid var(--admin-line);
+  border-radius: 16px;
+  background: #fff;
+  padding: 16px;
+  display: grid;
+  gap: 10px;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+}
+
+.tg-stat-label {
+  font-size: 13px;
+  color: var(--admin-muted);
+}
+
+.tg-stat-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--admin-text);
+}
+
+.tg-card {
+  border: 1px solid var(--admin-line);
+  border-radius: 16px;
+  background: #fff;
+  padding: 16px;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+}
+
+.tg-card-title {
+  margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--admin-text);
+}
+
+.tg-filter-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.tg-filter-bar input,
+.tg-filter-bar select {
+  width: 100%;
+  border: 1px solid var(--admin-line);
+  border-radius: 10px;
+  padding: 12px 12px;
+  font-size: 13px;
+  background: #fff;
+  line-height: 1.2;
+  height: 44px;
+}
+
+.tg-filter-bar button.btn {
+  padding: 12px 14px;
+}
+
+.tg-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+}
+
+.tg-table th,
+.tg-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #eef2f7;
+  text-align: left;
+  font-size: 13px;
+}
+
+.tg-table th {
+  color: var(--admin-muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  background: #f8fafc;
+}
+
+.tg-table .tg-filter-row th {
+  background: #fff;
+  padding: 8px 10px;
+}
+
+.tg-table .tg-filter-row input,
+.tg-table .tg-filter-row select {
+  width: 100%;
+  border: 1px solid var(--admin-line);
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 12px;
+  height: 40px;
+  background: #fff;
+}
+
+.tg-table th.col-narrow,
+.tg-table td.col-narrow {
+  width: 90px;
+}
+
+.tg-table th.col-wide,
+.tg-table td.col-wide {
+  width: 140px;
+}
+
+.tg-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  background: #eef2ff;
+  color: #1d4ed8;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.table .btn {
+  width: 9ch;
+  min-width: 9ch;
+  justify-content: center;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.filter-row th {
+  background: #fff;
+  border-bottom: 1px solid #e8edf5;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.filter-row input,
+.filter-row select {
+  width: 100%;
+  min-width: 78px;
+  border: 1px solid #cfd9e8;
+  border-radius: 8px;
+  padding: 6px 8px;
+  font-size: 12px;
+  color: var(--admin-text);
+  background: #fff;
+}
+
+.filter-row input:focus,
+.filter-row select:focus {
+  border-color: #93c5fd;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.stack {
+  display: grid;
+  gap: 12px;
+}
+
+.attempt-box {
+  border: 1px solid var(--admin-line);
+  border-radius: 12px;
+  background: var(--admin-surface-soft);
+  padding: 12px;
+}
+
+.attempt-box h4 {
+  margin: 0 0 8px;
+}
+
+.attempt-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.metric {
+  border: 1px solid #e5edf8;
+  border-radius: 10px;
+  background: #fff;
+  padding: 8px 9px;
+}
+
+.metric-label {
+  margin: 0;
+  color: var(--admin-muted);
+  font-size: 12px;
+}
+
+.metric-value {
+  margin: 4px 0 0;
+  font-weight: 800;
+}
+
+.answer-list {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.answer-list li + li {
+  margin-top: 8px;
+}
+
+.empty {
+  border: 1px dashed var(--admin-line);
+  border-radius: 12px;
+  background: #f8fafc;
+  color: var(--admin-muted);
+  text-align: center;
+  padding: 20px;
+}
+
+.course-groups-widget {
+  border: 1px solid var(--admin-line);
+  border-radius: 12px;
+  background: var(--admin-surface-soft);
+  padding: 10px;
+}
+
+.course-groups-widget__header {
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.course-groups-widget__row {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) 220px;
+  gap: 10px;
+  align-items: start;
+}
+
+.course-groups-widget__selected,
+.course-groups-widget__available {
+  width: 100%;
+  border: 1px solid #cfd9e8;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.course-groups-widget__controls {
+  display: grid;
+  gap: 8px;
+}
+
+.course-groups-widget__btn {
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-weight: 800;
+  cursor: pointer;
+  padding: 7px 10px;
+}
+
+.course-groups-widget__btn:hover {
+  background: #dbeafe;
+}
+
+.course-groups-widget__hint {
+  margin: 8px 0 0;
+  color: var(--admin-muted);
+  font-size: 12px;
+}
+
+input,
+select,
+textarea {
+  border-radius: 8px;
+}
+
+@media (max-width: 960px) {
+  .admin-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-sidebar {
+    border-right: 0;
+    border-bottom: 1px solid var(--admin-line);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    padding: 12px;
+  }
+
+  .admin-nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .admin-main {
+    padding: 10px;
+  }
+
+  .admin-shell {
+    padding: 12px;
+  }
+
+  .admin-nav {
+    grid-template-columns: 1fr;
+  }
+
+  .course-groups-widget__row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.submit-row a.closelink {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--admin-line);
+  border-radius: 10px;
+  background: var(--admin-surface);
+  color: var(--admin-text) !important;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.2 !important;
+  height: auto !important;
+  min-height: 38px;
+  padding: 10px 14px !important;
+  min-width: 120px;
+  white-space: nowrap;
+}
+
+.submit-row a.closelink:hover {
+  background: var(--admin-surface-soft);
+  color: var(--admin-text) !important;
+}
+
+/* Lesson attempt: hide object tools row (History button). */
+body.app-courses.model-lessonattempt.change-form #content-main .object-tools {
+  display: none;
+}
+
+body.model-lessonattempt .object-tools,
+body.model-lessonattempt ul.object-tools,
+body.model-lessonattempt .historylink {
+  display: none !important;
+}
+
+/* Lesson attempt change page: remove empty top strip above fields. */
+body.app-courses.model-lessonattempt.change-form section.admin-shell {
+  padding: 0 !important;
+  margin-top: 0 !important;
+}
+
+body.app-courses.model-lessonattempt.change-form .admin-topbar {
+  margin-bottom: 0 !important;
+}
+
+body.app-courses.model-lessonattempt.change-form #content-main {
+  margin-top: 0 !important;
+}
+
+body.app-courses.model-lessonattempt.change-form #content-main > form {
+  margin-top: 0 !important;
+}
+
+body.app-courses.model-lessonattempt.change-form #content-main fieldset.module.aligned {
+  margin-top: 0 !important;
+}
+
+body.app-courses.model-lessonattempt.change-form #content-main > form > div {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+body.app-courses.model-lessonattempt.change-form #content-main > form > div > fieldset.module.aligned:first-of-type {
+  border-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+body.app-courses.model-lessonattempt.change-form #content-main > form > div > fieldset.module.aligned {
+  border: 1px solid var(--admin-line) !important;
+  border-radius: 16px;
+  background: var(--admin-surface);
+  overflow: hidden;
+}
+
+/* Lesson attempt answers: hide per-row technical "original" text. */
+body.app-courses.model-lessonattempt.change-form #answers-group td.original p {
+  display: none !important;
+}
+
+body.app-courses.model-lessonattempt.change-form #answers-group tr.has_original td {
+  padding-top: 10px !important;
+}
+
+body.app-courses.model-lessonattempt.change-form #answers-group .tabular.inline-related.last-related fieldset.module {
+  border: 1px solid var(--admin-line) !important;
+  border-radius: 16px;
+  background: var(--admin-surface);
+  overflow: hidden;
+}
+
+/* Payment order change page: keep History visible, but align it in the common admin layout. */
+body.app-courses.model-paymentorder.change-form section.admin-shell {
+  padding: 0 !important;
+}
+
+body.app-courses.model-paymentorder.change-form .admin-topbar {
+  margin-bottom: 0 !important;
+}
+
+body.app-courses.model-paymentorder.change-form #content-main {
+  margin-top: 0 !important;
+  position: relative;
+}
+
+body.app-courses.model-paymentorder.change-form #content-main .object-tools,
+body.app-courses.model-paymentorder.change-form #content-main ul.object-tools,
+body.app-courses.model-paymentorder.change-form #content-main .historylink {
+  display: none !important;
+}
+
+body.app-courses.model-paymentorder.change-form #content-main .object-tools li {
+  float: none !important;
+  margin: 0 !important;
+}
+
+body.app-courses.model-paymentorder.change-form #content-main > form,
+body.app-courses.model-paymentorder.change-form #content-main > form > div,
+body.app-courses.model-paymentorder.change-form #content-main > form > div > fieldset.module.aligned:first-of-type {
+  margin-top: 0 !important;
+}
+
+body.app-courses.model-paymentorder.change-form #content-main > form > div {
+  padding-top: 16px !important;
+}
+
+body.app-courses.model-paymentorder.change-form #content-main > form > div > fieldset.module.aligned:first-of-type {
+  border-top: 0 !important;
+}
+
+body.app-courses.model-paymentorder.change-form #content-main > form > div > fieldset.module.aligned {
+  border: 1px solid var(--admin-line) !important;
+  border-radius: 16px;
+  background: var(--admin-surface);
+  overflow: hidden;
+}
+
+body.app-courses.model-paymentorder.change-form #content-main .readonly,
+body.app-courses.model-paymentorder.change-form #content-main .readonly a {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}

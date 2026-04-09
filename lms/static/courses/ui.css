@@ -296,9 +296,9 @@ body {
   font-size: clamp(11px, 0.78rem, 12px);
   font-weight: 700;
   line-height: 1.1;
-  white-space: nowrap;
-  word-break: normal;
-  overflow-wrap: normal;
+  white-space: nowrap !important;
+  word-break: keep-all !important;
+  overflow-wrap: normal !important;
   flex: none;
   flex-shrink: 0;
   width: max-content;

@@ -22,15 +22,6 @@
     {% else %}
       <p class="alert alert-neutral">
         Прогресс: <b>{{ completed_items }}/{{ total_items }}</b> ({{ progress_percent }}%).
-        Средний результат по тестам статей: <b>{{ article_tests_average }}%</b>.
-        Итоговый тест:
-        {% if not has_final_test %}
-          <b>не назначен</b>.
-        {% elif final_test_passed %}
-          <b>сдан</b>.
-        {% else %}
-          <b>не сдан</b>.
-        {% endif %}
       </p>
     {% endif %}
   </div>

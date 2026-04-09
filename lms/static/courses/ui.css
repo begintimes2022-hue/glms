@@ -299,8 +299,11 @@ body {
   white-space: nowrap;
   word-break: normal;
   overflow-wrap: normal;
-  flex: 0 0 auto;
-  max-width: 100%;
+  flex: none;
+  flex-shrink: 0;
+  width: max-content;
+  max-width: none;
+  min-width: fit-content;
 }
 
 .profile-grid {

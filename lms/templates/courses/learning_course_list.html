@@ -47,7 +47,7 @@
                     <h3 class="card-title">
                       <a href="{% url 'courses:learning_detail' result.course.id %}">{{ result.course.title }}</a>
                     </h3>
-                    <p class="muted">{{ result.course.description|truncatechars:220 }}</p>
+                    <p class="muted">{{ result.course.description }}</p>
                   </div>
                 </div>
                 <div class="actions">
@@ -71,7 +71,7 @@
             <h2 class="card-title">
               <a href="{% url 'courses:learning_detail' item.course.id %}">{{ item.course.title }}</a>
             </h2>
-            <p class="muted">{{ item.course.description|truncatechars:180 }}</p>
+            <p class="muted">{{ item.course.description }}</p>
           </div>
           {% if item.status == "completed" %}
             <span class="status status-ok">Пройден</span>

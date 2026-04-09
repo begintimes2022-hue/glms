@@ -1,4 +1,6 @@
 (function () {
+  let sectionsCache = null;
+
   function clearSelect(select, placeholder) {
     if (!select) return;
     select.innerHTML = "";
@@ -29,8 +31,32 @@
 
   async function fetchJson(url) {
     const response = await fetch(url, { method: "GET", credentials: "same-origin" });
-    if (!response.ok) throw new Error("Request failed");
+    if (!response.ok) {
+      throw new Error("Request failed");
+    }
     return response.json();
+  }
+
+  async function loadSections(sectionSelect, selectedSectionId) {
+    if (!sectionSelect) return;
+    clearSelect(sectionSelect, "Загрузка разделов...");
+
+    try {
+      if (!sectionsCache) {
+        const data = await fetchJson("/admin/modules/sections/");
+        sectionsCache = data && data.results ? data.results : [];
+      }
+
+      fillSelect(
+        sectionSelect,
+        sectionsCache,
+        selectedSectionId,
+        sectionsCache.length ? "— выберите раздел —" : "Разделов нет",
+        (item) => item.title || `Раздел #${item.id}`
+      );
+    } catch (e) {
+      clearSelect(sectionSelect, "Ошибка загрузки разделов");
+    }
   }
 
   async function loadModules(sectionId, moduleSelect, selectedModuleId) {
@@ -45,7 +71,7 @@
         items,
         selectedModuleId,
         items.length ? "— выберите модуль —" : "Модулей нет",
-        (item) => item.title || `Module #${item.id}`
+        (item) => item.title || `Модуль #${item.id}`
       );
     } catch (e) {
       clearSelect(moduleSelect, "Ошибка загрузки модулей");
@@ -74,36 +100,35 @@
     }
   }
 
-  function extractId(selectId) {
-    const match = selectId && selectId.match(/-(\d+|empty)-/);
-    return match ? match[1] : null;
-  }
-
   function getRowControls(row) {
-    const sectionSelect = row.querySelector('select[id$="-section"]');
-    const moduleSelect = row.querySelector('select[id$="-module"]');
-    const lessonSelect = row.querySelector('select[id$="-lesson"]');
-    const itemTypeSelect = row.querySelector('select[id$="-item_type"]');
-    return { sectionSelect, moduleSelect, lessonSelect, itemTypeSelect };
+    return {
+      sectionSelect: row.querySelector('select[id$="-section"]'),
+      moduleSelect: row.querySelector('select[id$="-module"]'),
+      lessonSelect: row.querySelector('select[id$="-lesson"]'),
+    };
   }
 
-  async function syncRow(row, preserveSelections) {
+  async function prepareRow(row, preserveSelections) {
+    if (!row) return;
     const { sectionSelect, moduleSelect, lessonSelect } = getRowControls(row);
     if (!sectionSelect || !moduleSelect || !lessonSelect) return;
 
+    const selectedSectionId = preserveSelections ? sectionSelect.value : "";
     const selectedModuleId = preserveSelections ? moduleSelect.value : "";
     const selectedLessonId = preserveSelections ? lessonSelect.value : "";
 
+    await loadSections(sectionSelect, selectedSectionId);
     await loadModules(sectionSelect.value, moduleSelect, selectedModuleId);
     await loadLessons(moduleSelect.value, lessonSelect, selectedLessonId);
   }
 
   function bindRow(row) {
     if (!row || row.dataset.courseItemsBound === "1") return;
-    row.dataset.courseItemsBound = "1";
-
+    if (row.classList.contains("empty-form")) return;
     const { sectionSelect, moduleSelect } = getRowControls(row);
     if (!sectionSelect || !moduleSelect) return;
+
+    row.dataset.courseItemsBound = "1";
 
     sectionSelect.addEventListener("change", async function () {
       await loadModules(sectionSelect.value, moduleSelect, "");
@@ -115,19 +140,45 @@
       const { lessonSelect } = getRowControls(row);
       await loadLessons(moduleSelect.value, lessonSelect, "");
     });
-
-    syncRow(row, true);
   }
 
-  function bindAllRows() {
-    document.querySelectorAll("#items-group tbody tr.form-row").forEach(bindRow);
+  async function initExistingRows() {
+    const rows = Array.from(document.querySelectorAll("#items-group tbody tr.form-row:not(.empty-form)"));
+    for (const row of rows) {
+      bindRow(row);
+      await prepareRow(row, true);
+    }
+  }
+
+  async function initNewRow(row) {
+    if (!row) return;
+    bindRow(row);
+    await prepareRow(row, false);
   }
 
   document.addEventListener("DOMContentLoaded", function () {
-    bindAllRows();
+    initExistingRows();
 
-    document.body.addEventListener("click", function () {
-      window.setTimeout(bindAllRows, 50);
+    document.addEventListener("formset:added", function (event) {
+      const row = event.target;
+      window.setTimeout(function () {
+        initNewRow(row);
+      }, 0);
     });
+
+    const tbody = document.querySelector("#items-group tbody");
+    if (tbody && window.MutationObserver) {
+      const observer = new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
+          mutation.addedNodes.forEach(function (node) {
+            if (!(node instanceof HTMLElement)) return;
+            if (node.matches && node.matches("tr.form-row") && !node.classList.contains("empty-form")) {
+              initNewRow(node);
+            }
+          });
+        });
+      });
+      observer.observe(tbody, { childList: true, subtree: false });
+    }
   });
 })();

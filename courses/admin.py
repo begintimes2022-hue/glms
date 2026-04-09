@@ -809,6 +809,19 @@ def admin_lessons_by_course(request, course_id: int):
     return JsonResponse({"results": data})
 
 
+def admin_sections_list(request):
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return HttpResponseForbidden("Forbidden")
+
+    sections = (
+        KnowledgeBaseSection.objects
+        .order_by("order", "title", "id")
+        .values("id", "title")
+    )
+    data = [{"id": s["id"], "title": s["title"]} for s in sections]
+    return JsonResponse({"results": data})
+
+
 def admin_modules_by_section(request, section_id: int):
     if not request.user.is_authenticated or not request.user.is_staff:
         return HttpResponseForbidden("Forbidden")
@@ -1148,6 +1161,11 @@ def get_admin_custom_urls():
             "modules/by-section/<int:section_id>/",
             admin.site.admin_view(admin_modules_by_section),
             name="modules_by_section",
+        ),
+        path(
+            "modules/sections/",
+            admin.site.admin_view(admin_sections_list),
+            name="sections_list",
         ),
         path(
             "modules/history/<int:user_id>/<int:course_id>/",

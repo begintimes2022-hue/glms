@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}Genesis by Begintimes{% endblock %}</title>
+    <title>{% block title %}Genesis by BeginTimes{% endblock %}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
@@ -15,8 +15,8 @@
 <div class="app-shell">
     <header class="topbar">
         <a href="{% url 'courses:profile' %}" class="brand">
-            <img class="brand-logo" src="{% static 'courses/logo_x1.png' %}" alt="Genesis by Begintimes">
-            <span>Genesis by Begintimes</span>
+            <img class="brand-logo" src="{% static 'courses/logo_x1.png' %}" alt="Genesis by BeginTimes">
+            <span>Genesis by BeginTimes</span>
         </a>
 
         {% if user.is_authenticated %}

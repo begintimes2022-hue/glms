@@ -17,7 +17,7 @@
           name="q"
           value="{{ search_query }}"
           class="search-input"
-          placeholder="Поиск по заголовку и тексту материалов курса"
+          placeholder="Поиск по названию курса"
           style="max-width: 420px;"
         >
         <button type="submit" class="btn btn-primary">Найти</button>
@@ -45,24 +45,19 @@
                 <div class="card-head">
                   <div>
                     <h3 class="card-title">
-                      <a href="{% url 'courses:learning_item' result.course.id result.item.sequence_index %}">{{ result.item.title }}</a>
+                      <a href="{% url 'courses:learning_detail' result.course.id %}">{{ result.course.title }}</a>
                     </h3>
-                    <p class="muted">
-                      {{ result.course.title }}
-                      {% if result.item.section %} · {{ result.item.section.title }}{% endif %}
-                      {% if result.item.module %} · {{ result.item.module.title }}{% endif %}
-                    </p>
-                    <p class="muted">{{ result.snippet|truncatechars:220 }}</p>
+                    <p class="muted">{{ result.course.description|truncatechars:220 }}</p>
                   </div>
                 </div>
                 <div class="actions">
-                  <a class="btn btn-primary" href="{% url 'courses:learning_item' result.course.id result.item.sequence_index %}">Открыть материал</a>
+                  <a class="btn btn-primary" href="{% url 'courses:learning_detail' result.course.id %}">Открыть курс</a>
                 </div>
               </li>
             {% endfor %}
           </ul>
         {% else %}
-          <div class="empty">По вашему запросу ничего не найдено среди доступных материалов курса.</div>
+          <div class="empty">По вашему запросу ничего не найдено среди доступных курсов.</div>
         {% endif %}
       </div>
     </section>

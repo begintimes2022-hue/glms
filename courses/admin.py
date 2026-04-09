@@ -433,7 +433,7 @@ class CourseAdminForm(forms.ModelForm):
 class QuestionAdmin(admin.ModelAdmin):
     form = QuestionAdminForm
     list_display = ["question_text", "lesson", "correct_answer"]
-    search_fields = ["question_text", "lesson__title", "lesson__course__title"]
+    search_fields = ["question_text"]
     fields = [
         "course",
         "lesson",
@@ -477,7 +477,7 @@ class CourseAdmin(admin.ModelAdmin):
     form = CourseAdminForm
     list_display = ["title", "section", "created_by", "created_at"]
     list_filter = ["section", "created_at"]
-    search_fields = ["title", "description", "section__title"]
+    search_fields = ["title"]
 
     class Media:
         js = ("courses/admin/course_allowed_groups.js",)
@@ -555,7 +555,7 @@ class LearningCourseAdmin(admin.ModelAdmin):
     change_list_template = "admin/courses/learningcourse/change_list.html"
     list_display = ["title", "created_by", "created_at"]
     list_filter = ["created_at"]
-    search_fields = ["title", "description"]
+    search_fields = ["title"]
     inlines = [LearningCourseItemInline, LearningCourseFinalQuestionInline]
 
     def get_changeform_initial_data(self, request):
@@ -592,7 +592,7 @@ class LessonAdmin(admin.ModelAdmin):
     form = LessonAdminForm
     list_display = ["title", "course", "section_name", "order", "is_final"]
     list_filter = ["course", "course__section", "is_final"]
-    search_fields = ["title", "course__title", "course__section__title"]
+    search_fields = ["title"]
     ordering = ["course__section", "course", "order", "id"]
     inlines = [QuestionInline]
 
@@ -735,7 +735,7 @@ class KnowledgeBaseSectionAdmin(admin.ModelAdmin):
     form = KnowledgeBaseSectionAdminForm
     change_list_template = "admin/courses/knowledgebasesection/change_list.html"
     list_display = ("title", "slug", "modules_count", "order", "created_at")
-    search_fields = ("title", "slug")
+    search_fields = ("title",)
     ordering = ("order", "title", "id")
 
     @admin.display(description="Модули")
@@ -1308,6 +1308,7 @@ class CustomUserAdmin(DjangoUserAdmin):
 
 class GroupAdmin(DjangoGroupAdmin):
     inlines = [GroupProfileInline]
+    search_fields = ("name",)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)

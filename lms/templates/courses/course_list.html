@@ -17,7 +17,7 @@
           name="q"
           value="{{ search_query }}"
           class="search-input"
-          placeholder="Поиск по заголовку и тексту статей"
+          placeholder="Поиск по названию модуля"
           style="max-width: 420px;"
         >
         <button type="submit" class="btn btn-primary">Найти</button>
@@ -45,20 +45,19 @@
                 <div class="card-head">
                   <div>
                     <h3 class="card-title">
-                      <a href="{% url 'courses:lesson' result.course.id result.id %}">{{ result.title }}</a>
+                      <a href="{% url 'courses:detail' result.course.id %}">{{ result.course.title }}</a>
                     </h3>
-                    <p class="muted">{{ result.course.title }}</p>
-                    <p class="muted">{{ result.snippet|safe }}</p>
+                    <p class="muted">{{ result.course.description|truncatechars:220 }}</p>
                   </div>
                 </div>
                 <div class="actions">
-                  <a class="btn btn-primary" href="{% url 'courses:lesson' result.course.id result.id %}">Открыть статью</a>
+                  <a class="btn btn-primary" href="{% url 'courses:detail' result.course.id %}">Открыть модуль</a>
                 </div>
               </li>
             {% endfor %}
           </ul>
         {% else %}
-          <div class="empty">По вашему запросу ничего не найдено среди доступных статей.</div>
+          <div class="empty">По вашему запросу ничего не найдено среди доступных модулей.</div>
         {% endif %}
       </div>
     </section>

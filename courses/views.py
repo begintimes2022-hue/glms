@@ -8,8 +8,6 @@ from django.urls import reverse
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.utils import timezone
-from django.utils.html import strip_tags
-from django.contrib.postgres.search import SearchHeadline, SearchQuery, SearchRank, SearchVector
 
 from .models import (
     Course,
@@ -365,32 +363,12 @@ def learning_course_list(request):
             "total_items": progress["total_items"],
         })
 
-        if query:
-            query_lc = query.lower()
-            for item in expanded_items:
-                if not item.is_available or not item.lesson:
-                    continue
-                haystack = f"{item.title}\n{item.lesson.content}".lower()
-                if query_lc not in haystack:
-                    continue
-
-                content_text = strip_tags(item.lesson.content or "")
-                start = content_text.lower().find(query_lc)
-                if start < 0:
-                    start = 0
-                snippet_start = max(0, start - 60)
-                snippet_end = min(len(content_text), start + max(len(query), 1) + 120)
-                snippet = content_text[snippet_start:snippet_end].strip()
-                if snippet_start > 0:
-                    snippet = "... " + snippet
-                if snippet_end < len(content_text):
-                    snippet += " ..."
-
-                search_results.append({
-                    "course": course,
-                    "item": item,
-                    "snippet": snippet,
-                })
+    if query:
+        query_lc = query.lower()
+        search_results = [
+            item for item in courses
+            if query_lc in (item["course"].title or "").lower()
+        ]
 
     return render(
         request,
@@ -672,42 +650,6 @@ def course_list(request):
     courses_with_status = []
     search_results = []
 
-    if query:
-        accessible_courses = list(courses_qs)
-        unlocked_ids = _unlocked_lesson_ids_for_user(accessible_courses, request.user)
-        search_vector = (
-            SearchVector("title", weight="A", config="russian")
-            + SearchVector("content", weight="B", config="russian")
-        )
-        search_query = SearchQuery(query, config="russian", search_type="websearch")
-
-        search_qs = (
-            Lesson.objects
-            .filter(course__in=accessible_courses, id__in=unlocked_ids)
-            .annotate(search=search_vector)
-            .filter(search=search_query)
-            .annotate(
-                rank=SearchRank(search_vector, search_query),
-                snippet=SearchHeadline(
-                    "content",
-                    search_query,
-                    config="russian",
-                    start_sel="<mark>",
-                    stop_sel="</mark>",
-                    max_words=24,
-                    min_words=12,
-                    short_word=2,
-                    highlight_all=False,
-                    max_fragments=2,
-                    fragment_delimiter=" ... ",
-                ),
-            )
-            .select_related("course")
-            .order_by("-rank", "course__title", "order", "id")
-        )
-
-        search_results = list(search_qs)
-
     for course in courses_qs:
         lessons = Lesson.objects.filter(course=course).order_by("order", "id")
         lessons = annotate_lessons_with_user_progress(lessons, request.user)
@@ -725,6 +667,13 @@ def course_list(request):
             "course": course,
             "status": status,
         })
+
+    if query:
+        query_lc = query.lower()
+        search_results = [
+            item for item in courses_with_status
+            if query_lc in (item["course"].title or "").lower()
+        ]
 
     return render(
         request,

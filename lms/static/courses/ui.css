@@ -265,11 +265,13 @@ body {
   justify-content: space-between;
   align-items: flex-start;
   gap: 12px;
+  min-width: 0;
 }
 
 .card-title {
   margin: 0;
   font-size: 18px;
+  min-width: 0;
 }
 
 .card-title a {
@@ -288,10 +290,17 @@ body {
 .status {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   padding: 5px 10px;
   border-radius: 999px;
-  font-size: 12px;
+  font-size: clamp(11px, 0.78rem, 12px);
   font-weight: 700;
+  line-height: 1.1;
+  white-space: nowrap;
+  word-break: normal;
+  overflow-wrap: normal;
+  flex: 0 0 auto;
+  max-width: 100%;
 }
 
 .profile-grid {
@@ -393,6 +402,7 @@ body {
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 8px;
+  min-width: 0;
 }
 
 .empty {
@@ -410,6 +420,10 @@ body {
   padding: 16px;
   background: var(--surface-soft);
   line-height: 1.7;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .content-block h1,
@@ -440,10 +454,14 @@ body {
 }
 
 .content-block table {
+  display: block;
   width: 100%;
+  max-width: 100%;
   border-collapse: collapse;
   border: 1px solid var(--line);
   background: #fff;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .content-block th,
@@ -451,6 +469,20 @@ body {
   border: 1px solid var(--line);
   padding: 8px 10px;
   text-align: left;
+  min-width: 120px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.content-block pre,
+.content-block code,
+.content-block iframe,
+.content-block video {
+  max-width: 100%;
+}
+
+.content-block pre {
+  overflow-x: auto;
 }
 
 .alert {
@@ -673,6 +705,15 @@ body {
 }
 
 @media (max-width: 640px) {
+  .card-head {
+    flex-wrap: wrap;
+  }
+
+  .status {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+
   .kb-module {
     margin-left: 0;
   }

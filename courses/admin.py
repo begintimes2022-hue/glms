@@ -25,6 +25,7 @@ from .models import (
     KnowledgeBaseSection,
     GroupProfile,
     PaymentOrder,
+    normalize_answer_codes,
 )
 from .progress import annotate_lessons_with_user_progress, build_course_progress
 
@@ -56,6 +57,11 @@ def _get_user_tariff_group(user):
 # Question admin: Course -> Lesson chained dropdowns
 # -----------------------------
 class QuestionAdminForm(forms.ModelForm):
+    is_correct_a = forms.BooleanField(required=False, label="Верный")
+    is_correct_b = forms.BooleanField(required=False, label="Верный")
+    is_correct_c = forms.BooleanField(required=False, label="Верный")
+    is_correct_d = forms.BooleanField(required=False, label="Верный")
+
     course = forms.ModelChoiceField(
         queryset=Course.objects.all().order_by("title", "id"),
         required=False,
@@ -65,7 +71,7 @@ class QuestionAdminForm(forms.ModelForm):
 
     class Meta:
         model = Question
-        fields = ["course", "lesson", "question_text", "option_a", "option_b", "option_c", "option_d", "correct_answer"]
+        fields = ["course", "lesson", "question_text", "option_a", "option_b", "option_c", "option_d"]
         labels = {
             "lesson": "Статья",
             "question_text": "Тест",
@@ -73,7 +79,6 @@ class QuestionAdminForm(forms.ModelForm):
             "option_b": "Вариант B",
             "option_c": "Вариант C",
             "option_d": "Вариант D",
-            "correct_answer": "Верный ответ",
         }
 
     def __init__(self, *args, **kwargs):
@@ -96,6 +101,119 @@ class QuestionAdminForm(forms.ModelForm):
                 self.fields["lesson"].queryset = Lesson.objects.filter(course_id=course_id_int).order_by("order", "id")
             except (TypeError, ValueError):
                 self.fields["lesson"].queryset = Lesson.objects.none()
+
+        selected = set(normalize_answer_codes(getattr(self.instance, "correct_answer", "")).split(",")) if getattr(self.instance, "correct_answer", "") else set()
+        self.fields["is_correct_a"].initial = "A" in selected
+        self.fields["is_correct_b"].initial = "B" in selected
+        self.fields["is_correct_c"].initial = "C" in selected
+        self.fields["is_correct_d"].initial = "D" in selected
+
+    def clean(self):
+        cleaned_data = super().clean()
+        selected = []
+        for code in ("A", "B", "C", "D"):
+            if cleaned_data.get(f"is_correct_{code.lower()}"):
+                selected.append(code)
+        if not selected:
+            raise ValidationError("Нужно выбрать хотя бы один правильный ответ.")
+        if "D" in selected and not (cleaned_data.get("option_d") or "").strip():
+            self.add_error("option_d", "Нельзя отметить вариант D правильным, если текст варианта D пустой.")
+        cleaned_data["correct_answer"] = normalize_answer_codes(selected)
+        return cleaned_data
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.correct_answer = self.cleaned_data["correct_answer"]
+        if commit:
+            instance.save()
+            self.save_m2m()
+        return instance
+
+
+class QuestionInlineForm(forms.ModelForm):
+    is_correct_a = forms.BooleanField(required=False, label="Верный")
+    is_correct_b = forms.BooleanField(required=False, label="Верный")
+    is_correct_c = forms.BooleanField(required=False, label="Верный")
+    is_correct_d = forms.BooleanField(required=False, label="Верный")
+
+    class Meta:
+        model = Question
+        fields = ["question_text", "option_a", "option_b", "option_c", "option_d"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        selected = set(normalize_answer_codes(getattr(self.instance, "correct_answer", "")).split(",")) if getattr(self.instance, "correct_answer", "") else set()
+        self.fields["is_correct_a"].initial = "A" in selected
+        self.fields["is_correct_b"].initial = "B" in selected
+        self.fields["is_correct_c"].initial = "C" in selected
+        self.fields["is_correct_d"].initial = "D" in selected
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if cleaned_data.get("DELETE"):
+            return cleaned_data
+        selected = []
+        for code in ("A", "B", "C", "D"):
+            if cleaned_data.get(f"is_correct_{code.lower()}"):
+                selected.append(code)
+        has_content = any((cleaned_data.get("question_text"), cleaned_data.get("option_a"), cleaned_data.get("option_b"), cleaned_data.get("option_c"), cleaned_data.get("option_d")))
+        if has_content and not selected:
+            raise ValidationError("Нужно выбрать хотя бы один правильный ответ.")
+        if "D" in selected and not (cleaned_data.get("option_d") or "").strip():
+            self.add_error("option_d", "Нельзя отметить вариант D правильным, если текст варианта D пустой.")
+        cleaned_data["correct_answer"] = normalize_answer_codes(selected)
+        return cleaned_data
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.correct_answer = self.cleaned_data.get("correct_answer", "")
+        if commit:
+            instance.save()
+            self.save_m2m()
+        return instance
+
+
+class LearningCourseFinalQuestionInlineForm(forms.ModelForm):
+    is_correct_a = forms.BooleanField(required=False, label="Верный")
+    is_correct_b = forms.BooleanField(required=False, label="Верный")
+    is_correct_c = forms.BooleanField(required=False, label="Верный")
+    is_correct_d = forms.BooleanField(required=False, label="Верный")
+
+    class Meta:
+        model = LearningCourseFinalQuestion
+        fields = ["question_text", "option_a", "option_b", "option_c", "option_d"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        selected = set(normalize_answer_codes(getattr(self.instance, "correct_answer", "")).split(",")) if getattr(self.instance, "correct_answer", "") else set()
+        self.fields["is_correct_a"].initial = "A" in selected
+        self.fields["is_correct_b"].initial = "B" in selected
+        self.fields["is_correct_c"].initial = "C" in selected
+        self.fields["is_correct_d"].initial = "D" in selected
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if cleaned_data.get("DELETE"):
+            return cleaned_data
+        selected = []
+        for code in ("A", "B", "C", "D"):
+            if cleaned_data.get(f"is_correct_{code.lower()}"):
+                selected.append(code)
+        has_content = any((cleaned_data.get("question_text"), cleaned_data.get("option_a"), cleaned_data.get("option_b"), cleaned_data.get("option_c"), cleaned_data.get("option_d")))
+        if has_content and not selected:
+            raise ValidationError("Нужно выбрать хотя бы один правильный ответ.")
+        if "D" in selected and not (cleaned_data.get("option_d") or "").strip():
+            self.add_error("option_d", "Нельзя отметить вариант D правильным, если текст варианта D пустой.")
+        cleaned_data["correct_answer"] = normalize_answer_codes(selected)
+        return cleaned_data
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.correct_answer = self.cleaned_data.get("correct_answer", "")
+        if commit:
+            instance.save()
+            self.save_m2m()
+        return instance
 
 
 class KnowledgeBaseSectionAdminForm(forms.ModelForm):
@@ -316,6 +434,15 @@ class QuestionAdmin(admin.ModelAdmin):
     form = QuestionAdminForm
     list_display = ["question_text", "lesson", "correct_answer"]
     search_fields = ["question_text", "lesson__title", "lesson__course__title"]
+    fields = [
+        "course",
+        "lesson",
+        "question_text",
+        ("option_a", "is_correct_a"),
+        ("option_b", "is_correct_b"),
+        ("option_c", "is_correct_c"),
+        ("option_d", "is_correct_d"),
+    ]
 
     def get_queryset(self, request):
         qs = super().get_queryset(request).select_related("lesson", "lesson__course", "lesson__course__section")
@@ -414,11 +541,12 @@ class LearningCourseItemInline(admin.TabularInline):
 
 class LearningCourseFinalQuestionInline(admin.StackedInline):
     model = LearningCourseFinalQuestion
+    form = LearningCourseFinalQuestionInlineForm
     extra = 1
     template = "admin/edit_inline/question_stacked.html"
     verbose_name = "Вопрос итогового теста"
     verbose_name_plural = "Вопросы итогового теста"
-    fields = ("question_text", "option_a", "option_b", "option_c", "option_d", "correct_answer")
+    fields = ("question_text", ("option_a", "is_correct_a"), ("option_b", "is_correct_b"), ("option_c", "is_correct_c"), ("option_d", "is_correct_d"))
 
 
 @admin.register(LearningCourse)
@@ -451,11 +579,12 @@ class LearningCourseAdmin(admin.ModelAdmin):
 
 class QuestionInline(admin.StackedInline):
     model = Question
+    form = QuestionInlineForm
     extra = 1
     template = "admin/edit_inline/question_stacked.html"
     verbose_name = "Вопрос теста"
     verbose_name_plural = "Вопросы теста"
-    fields = ("question_text", "option_a", "option_b", "option_c", "option_d", "correct_answer")
+    fields = ("question_text", ("option_a", "is_correct_a"), ("option_b", "is_correct_b"), ("option_c", "is_correct_c"), ("option_d", "is_correct_d"))
 
 
 @admin.register(Lesson)

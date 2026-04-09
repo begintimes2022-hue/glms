@@ -22,25 +22,26 @@
       {% for q in questions %}
         <fieldset class="question">
           <legend>{{ forloop.counter }}. {{ q.question_text }}</legend>
+          <p class="muted">Можно выбрать один или несколько вариантов.</p>
 
           <label class="option">
-            <input type="radio" name="q_{{ q.id }}" value="A">
+            <input type="checkbox" name="q_{{ q.id }}" value="A">
             <span>A) {{ q.option_a }}</span>
           </label>
 
           <label class="option">
-            <input type="radio" name="q_{{ q.id }}" value="B">
+            <input type="checkbox" name="q_{{ q.id }}" value="B">
             <span>B) {{ q.option_b }}</span>
           </label>
 
           <label class="option">
-            <input type="radio" name="q_{{ q.id }}" value="C">
+            <input type="checkbox" name="q_{{ q.id }}" value="C">
             <span>C) {{ q.option_c }}</span>
           </label>
 
           {% if q.option_d %}
             <label class="option">
-              <input type="radio" name="q_{{ q.id }}" value="D">
+              <input type="checkbox" name="q_{{ q.id }}" value="D">
               <span>D) {{ q.option_d }}</span>
             </label>
           {% endif %}

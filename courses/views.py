@@ -26,6 +26,7 @@ from .models import (
     GroupProfile,
     UserAccess,
     PaymentOrder,
+    normalize_answer_codes,
 )
 from .forms import RegistrationForm
 from .payments import (
@@ -552,9 +553,9 @@ def learning_course_test(request, learning_course_id: int, position: int):
             )
 
         for q in questions:
-            chosen = request.POST.get(f"q_{q.id}")
-            chosen_norm = chosen.upper().strip() if chosen else None
-            is_correct = bool(chosen_norm) and chosen_norm == q.correct_answer
+            chosen = request.POST.getlist(f"q_{q.id}")
+            chosen_norm = normalize_answer_codes(chosen) or None
+            is_correct = q.is_selection_correct(chosen_norm)
             if is_correct:
                 correct += 1
             if entry.kind == "final_test":
@@ -911,10 +912,9 @@ def lesson_test(request, course_id: int, lesson_id: int):
         )
 
         for q in questions:
-            chosen = request.POST.get(f"q_{q.id}")  # ожидаем "A"/"B"/"C"/"D"
-            chosen_norm = chosen.upper().strip() if chosen else None
-
-            is_correct = bool(chosen_norm) and chosen_norm == q.correct_answer
+            chosen = request.POST.getlist(f"q_{q.id}")
+            chosen_norm = normalize_answer_codes(chosen) or None
+            is_correct = q.is_selection_correct(chosen_norm)
             if is_correct:
                 correct += 1
 

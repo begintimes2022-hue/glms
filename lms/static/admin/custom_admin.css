@@ -817,6 +817,40 @@ a:hover {
   color: #64748b;
 }
 
+.tg-inline-delete input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.tg-inline-delete-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: 1px solid #fecaca;
+  background: #fff5f5;
+  color: #dc2626;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.tg-inline-delete-button:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #b91c1c;
+}
+
+.tg-inline-delete input[type="checkbox"]:checked + .tg-inline-delete-button {
+  background: #dc2626;
+  border-color: #dc2626;
+  color: #ffffff;
+}
+
 .tg-inline-body .fieldset.module {
   border: none;
   padding: 0;

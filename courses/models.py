@@ -8,6 +8,29 @@ from django.contrib.postgres.search import SearchVector
 import uuid
 
 
+ANSWER_CHOICES = ("A", "B", "C", "D")
+
+
+def normalize_answer_codes(values) -> str:
+    if values is None:
+        return ""
+    if isinstance(values, str):
+        raw_values = values.split(",")
+    else:
+        raw_values = values
+
+    normalized = []
+    seen = set()
+    for value in raw_values:
+        if value is None:
+            continue
+        code = str(value).strip().upper()
+        if code in ANSWER_CHOICES and code not in seen:
+            normalized.append(code)
+            seen.add(code)
+    return ",".join(normalized)
+
+
 class Course(models.Model):
     section = models.ForeignKey(
         "KnowledgeBaseSection",
@@ -192,14 +215,22 @@ class Question(models.Model):
     option_b = models.CharField(max_length=100)
     option_c = models.CharField(max_length=100)
     option_d = models.CharField(max_length=100, blank=True, default="")
-    correct_answer = models.CharField(
-        max_length=1,
-        choices=[("A", "A"), ("B", "B"), ("C", "C"), ("D", "D")],
-    )
+    correct_answer = models.CharField(max_length=7)
 
     class Meta:
         verbose_name = "Тест"
         verbose_name_plural = "Тесты"
+
+    def clean(self):
+        super().clean()
+        self.correct_answer = normalize_answer_codes(self.correct_answer)
+        if not self.correct_answer:
+            raise ValidationError({"correct_answer": "Нужно выбрать хотя бы один правильный ответ."})
+        if "D" in self.correct_answer.split(",") and not self.option_d.strip():
+            raise ValidationError({"option_d": "Нельзя выбрать вариант D, если он пустой."})
+
+    def is_selection_correct(self, selected_codes) -> bool:
+        return bool(normalize_answer_codes(selected_codes)) and normalize_answer_codes(selected_codes) == self.correct_answer
 
     def __str__(self):
         return self.question_text[:50]
@@ -216,14 +247,22 @@ class LearningCourseFinalQuestion(models.Model):
     option_b = models.CharField(max_length=100)
     option_c = models.CharField(max_length=100)
     option_d = models.CharField(max_length=100, blank=True, default="")
-    correct_answer = models.CharField(
-        max_length=1,
-        choices=[("A", "A"), ("B", "B"), ("C", "C"), ("D", "D")],
-    )
+    correct_answer = models.CharField(max_length=7)
 
     class Meta:
         verbose_name = "Вопрос итогового теста"
         verbose_name_plural = "Вопросы итогового теста"
+
+    def clean(self):
+        super().clean()
+        self.correct_answer = normalize_answer_codes(self.correct_answer)
+        if not self.correct_answer:
+            raise ValidationError({"correct_answer": "Нужно выбрать хотя бы один правильный ответ."})
+        if "D" in self.correct_answer.split(",") and not self.option_d.strip():
+            raise ValidationError({"option_d": "Нельзя выбрать вариант D, если он пустой."})
+
+    def is_selection_correct(self, selected_codes) -> bool:
+        return bool(normalize_answer_codes(selected_codes)) and normalize_answer_codes(selected_codes) == self.correct_answer
 
     def __str__(self):
         return self.question_text[:50]
@@ -261,12 +300,7 @@ class AttemptAnswer(models.Model):
     attempt = models.ForeignKey(LessonAttempt, on_delete=models.CASCADE, related_name="answers")
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="attempt_answers")
 
-    chosen_answer = models.CharField(
-        max_length=1,
-        choices=[("A", "A"), ("B", "B"), ("C", "C"), ("D", "D")],
-        blank=True,
-        null=True,
-    )
+    chosen_answer = models.CharField(max_length=7, blank=True, null=True)
 
     is_correct = models.BooleanField(default=False)
 
@@ -314,12 +348,7 @@ class LearningCourseFinalAnswer(models.Model):
         on_delete=models.CASCADE,
         related_name="attempt_answers",
     )
-    chosen_answer = models.CharField(
-        max_length=1,
-        choices=[("A", "A"), ("B", "B"), ("C", "C"), ("D", "D")],
-        blank=True,
-        null=True,
-    )
+    chosen_answer = models.CharField(max_length=7, blank=True, null=True)
     is_correct = models.BooleanField(default=False)
 
     class Meta:

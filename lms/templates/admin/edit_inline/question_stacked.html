@@ -30,7 +30,12 @@
             {% endif %}
           </span>
           {% if inline_admin_formset.formset.can_delete and inline_admin_formset.has_delete_permission and inline_admin_form.original %}
-            <span class="delete tg-inline-delete">{{ inline_admin_form.deletion_field.field }} {{ inline_admin_form.deletion_field.label_tag }}</span>
+            <span class="delete tg-inline-delete">
+              {{ inline_admin_form.deletion_field.field }}
+              <label for="{{ inline_admin_form.deletion_field.field.id_for_label }}" class="tg-inline-delete-button" title="Удалить вопрос" aria-label="Удалить вопрос">
+                &times;
+              </label>
+            </span>
           {% endif %}
         </h3>
 

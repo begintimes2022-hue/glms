@@ -22,11 +22,12 @@
         <div class="card">
           <div class="card-body">
             <h3 class="card-title">{{ forloop.counter }}. {{ q.question_text }}</h3>
-            <label class="option"><input type="radio" name="q_{{ q.id }}" value="A"> {{ q.option_a }}</label>
-            <label class="option"><input type="radio" name="q_{{ q.id }}" value="B"> {{ q.option_b }}</label>
-            <label class="option"><input type="radio" name="q_{{ q.id }}" value="C"> {{ q.option_c }}</label>
+            <p class="muted">Можно выбрать один или несколько вариантов.</p>
+            <label class="option"><input type="checkbox" name="q_{{ q.id }}" value="A"> {{ q.option_a }}</label>
+            <label class="option"><input type="checkbox" name="q_{{ q.id }}" value="B"> {{ q.option_b }}</label>
+            <label class="option"><input type="checkbox" name="q_{{ q.id }}" value="C"> {{ q.option_c }}</label>
             {% if q.option_d %}
-              <label class="option"><input type="radio" name="q_{{ q.id }}" value="D"> {{ q.option_d }}</label>
+              <label class="option"><input type="checkbox" name="q_{{ q.id }}" value="D"> {{ q.option_d }}</label>
             {% endif %}
           </div>
         </div>

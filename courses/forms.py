@@ -46,7 +46,7 @@ class RegistrationForm(forms.ModelForm):
     @staticmethod
     def _tariff_label(group: Group):
         if hasattr(group, "profile"):
-            label = f"{group.profile.public_name} ({group.name})"
+            label = group.profile.public_name or group.name
             amount = getattr(group.profile, "payment_amount", 0) or 0
             currency = getattr(group.profile, "payment_currency", "") or ""
             if currency == "933":

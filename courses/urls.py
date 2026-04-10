@@ -6,6 +6,7 @@ app_name = "courses"
 urlpatterns = [
     path("", views.profile, name="profile"),
     path("payments/return/", views.payment_return, name="payment_return"),
+    path("payments/history/", views.payment_history, name="payment_history"),
     path("payments/retry/", views.repeat_payment, name="repeat_payment"),
     path("learning-courses/", views.learning_course_list, name="learning_list"),
     path("learning-courses/<int:learning_course_id>/", views.learning_course_detail, name="learning_detail"),

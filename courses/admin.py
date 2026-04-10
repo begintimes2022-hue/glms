@@ -121,6 +121,11 @@ class QuestionAdminForm(forms.ModelForm):
         cleaned_data["correct_answer"] = normalize_answer_codes(selected)
         return cleaned_data
 
+    def _post_clean(self):
+        if hasattr(self, "cleaned_data"):
+            self.instance.correct_answer = self.cleaned_data.get("correct_answer", "")
+        super()._post_clean()
+
     def save(self, commit=True):
         instance = super().save(commit=False)
         instance.correct_answer = self.cleaned_data["correct_answer"]
@@ -164,6 +169,11 @@ class QuestionInlineForm(forms.ModelForm):
         cleaned_data["correct_answer"] = normalize_answer_codes(selected)
         return cleaned_data
 
+    def _post_clean(self):
+        if hasattr(self, "cleaned_data"):
+            self.instance.correct_answer = self.cleaned_data.get("correct_answer", "")
+        super()._post_clean()
+
     def save(self, commit=True):
         instance = super().save(commit=False)
         instance.correct_answer = self.cleaned_data.get("correct_answer", "")
@@ -206,6 +216,11 @@ class LearningCourseFinalQuestionInlineForm(forms.ModelForm):
             self.add_error("option_d", "Нельзя отметить вариант D правильным, если текст варианта D пустой.")
         cleaned_data["correct_answer"] = normalize_answer_codes(selected)
         return cleaned_data
+
+    def _post_clean(self):
+        if hasattr(self, "cleaned_data"):
+            self.instance.correct_answer = self.cleaned_data.get("correct_answer", "")
+        super()._post_clean()
 
     def save(self, commit=True):
         instance = super().save(commit=False)

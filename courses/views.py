@@ -957,6 +957,7 @@ def profile(request):
     group_profile = None
     user_access, _ = UserAccess.objects.get_or_create(user=request.user)
     access_state, access_message = _courses_access_state(request.user)
+    payments_count = PaymentOrder.objects.filter(user=request.user).count()
     if not request.user.is_superuser:
         group = request.user.groups.filter(profile__isnull=False, profile__is_admin_group=False).order_by("name").first()
         if group:
@@ -971,6 +972,20 @@ def profile(request):
             "user_access": user_access,
             "access_state": access_state,
             "access_message": access_message,
+            "payments_count": payments_count,
+            **_base_user_context(request, active_menu="profile"),
+        },
+    )
+
+
+@login_required
+def payment_history(request):
+    orders = PaymentOrder.objects.filter(user=request.user).select_related("tariff_group", "tariff_group__profile").order_by("-created_at")
+    return render(
+        request,
+        "courses/payment_history.html",
+        {
+            "orders": orders,
             **_base_user_context(request, active_menu="profile"),
         },
     )
@@ -1005,6 +1020,9 @@ def kb_list(request):
     if access_state != "active":
         return redirect("courses:profile")
 
+    query = request.GET.get("q", "").strip()
+    query_lower = query.lower()
+
     allowed_course_ids = _user_allowed_kb_course_ids(request.user)
     allowed_lesson_ids = _user_allowed_kb_lesson_ids(request.user)
     allowed_section_ids = set() if request.user.is_superuser else set(
@@ -1026,28 +1044,50 @@ def kb_list(request):
         .order_by("order", "title", "id")
     )
 
+    def matches_query(*values):
+        if not query_lower:
+            return True
+        haystack = " ".join(str(value or "") for value in values).lower()
+        return query_lower in haystack
+
     hierarchy = []
     for section in sections:
         section_modules = []
+        section_matches = matches_query(section.title, section.description)
 
         for course in section.modules.all():
             if request.user.is_superuser or course.id in allowed_course_ids:
-                articles = list(course.lessons.all())
+                accessible_articles = list(course.lessons.all())
             else:
-                articles = [article for article in course.lessons.all() if article.id in allowed_lesson_ids]
+                accessible_articles = [article for article in course.lessons.all() if article.id in allowed_lesson_ids]
 
-            if not articles and section.id not in allowed_section_ids and course.id not in allowed_course_ids and not request.user.is_superuser:
+            if not accessible_articles and section.id not in allowed_section_ids and course.id not in allowed_course_ids and not request.user.is_superuser:
+                continue
+
+            module_matches = matches_query(course.title, course.description)
+            if not query_lower or section_matches or module_matches:
+                filtered_articles = accessible_articles
+            else:
+                filtered_articles = [
+                    article
+                    for article in accessible_articles
+                    if matches_query(article.title, article.content)
+                ]
+
+            if not filtered_articles and query_lower and not section_matches and not module_matches:
                 continue
 
             section_modules.append({
                 "module": course,
-                "articles": articles,
+                "articles": filtered_articles,
+                "matches_query": module_matches,
             })
 
-        if section_modules or (section.id in allowed_section_ids):
+        if section_modules or (section.id in allowed_section_ids and not query_lower) or section_matches:
             hierarchy.append({
                 "section": section,
                 "modules": section_modules,
+                "matches_query": section_matches,
             })
 
     return render(
@@ -1055,6 +1095,8 @@ def kb_list(request):
         "courses/kb_list.html",
         {
             "hierarchy": hierarchy,
+            "query": query,
+            "has_search": bool(query),
             **_base_user_context(request, active_menu="kb"),
         },
     )

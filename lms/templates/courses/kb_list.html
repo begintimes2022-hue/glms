@@ -8,6 +8,25 @@
   <p class="page-subtitle">Выберите раздел, затем модуль, затем нужную статью.</p>
 </section>
 
+<section class="card">
+  <div class="card-body">
+    <form method="get" class="actions">
+      <input
+        type="search"
+        name="q"
+        value="{{ query }}"
+        class="search-input"
+        placeholder="Поиск по названиям и тексту"
+        style="max-width: 420px;"
+      >
+      <button type="submit" class="btn btn-primary">Найти</button>
+      {% if query %}
+        <a href="{% url 'courses:kb_list' %}" class="btn btn-ghost">Сбросить</a>
+      {% endif %}
+    </form>
+  </div>
+</section>
+
 <section class="stack kb-tree">
   {% for section_node in hierarchy %}
     <article class="card">
@@ -24,7 +43,7 @@
                 <summary class="kb-toggle kb-toggle-module">{{ module_node.module.title }}</summary>
                 <div class="kb-panel stack">
                   {% if module_node.module.description %}
-                    <p class="muted">{{ module_node.module.description|striptags|truncatechars:160 }}</p>
+                    <p class="muted">{{ module_node.module.description|striptags }}</p>
                   {% endif %}
 
                   <div class="kb-articles stack">
@@ -56,7 +75,11 @@
       </div>
     </article>
   {% empty %}
-    <div class="empty">Для вашего тарифа пока нет доступных материалов.</div>
+    {% if has_search %}
+      <div class="empty">По вашему запросу ничего не найдено в доступных материалах базы знаний.</div>
+    {% else %}
+      <div class="empty">Для вашего тарифа пока нет доступных материалов.</div>
+    {% endif %}
   {% endfor %}
 </section>
 {% endblock %}

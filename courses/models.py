@@ -225,7 +225,7 @@ class Question(models.Model):
         super().clean()
         self.correct_answer = normalize_answer_codes(self.correct_answer)
         if not self.correct_answer:
-            raise ValidationError({"correct_answer": "Нужно выбрать хотя бы один правильный ответ."})
+            raise ValidationError("Нужно выбрать хотя бы один правильный ответ.")
         if "D" in self.correct_answer.split(",") and not self.option_d.strip():
             raise ValidationError({"option_d": "Нельзя выбрать вариант D, если он пустой."})
 
@@ -257,7 +257,7 @@ class LearningCourseFinalQuestion(models.Model):
         super().clean()
         self.correct_answer = normalize_answer_codes(self.correct_answer)
         if not self.correct_answer:
-            raise ValidationError({"correct_answer": "Нужно выбрать хотя бы один правильный ответ."})
+            raise ValidationError("Нужно выбрать хотя бы один правильный ответ.")
         if "D" in self.correct_answer.split(",") and not self.option_d.strip():
             raise ValidationError({"option_d": "Нельзя выбрать вариант D, если он пустой."})
 

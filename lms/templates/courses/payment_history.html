@@ -1,0 +1,77 @@
+{% extends "base_user.html" %}
+
+{% block title %}История платежей{% endblock %}
+
+{% block content %}
+<section class="page-head">
+  <h1 class="page-title">История платежей</h1>
+  <p class="page-subtitle">Платежные заказы по вашей учетной записи.</p>
+</section>
+
+<section class="stack">
+  <article class="card">
+    <div class="card-body">
+      <div class="card-head">
+        <div>
+          <h2 class="card-title">Платежи</h2>
+          <p class="muted">Здесь отображаются все созданные платежные заказы.</p>
+        </div>
+        <a class="btn btn-ghost" href="{% url 'courses:profile' %}">Назад в личный кабинет</a>
+      </div>
+
+      {% if orders %}
+        <div class="payment-history-wrap">
+          <table class="payment-history-table">
+            <thead>
+              <tr>
+                <th>№ заказа</th>
+                <th>Дата создания</th>
+                <th>Тариф</th>
+                <th>Сумма</th>
+                <th>Валюта</th>
+                <th>Статус</th>
+                <th>Дата оплаты</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for order in orders %}
+                <tr>
+                  <td>{{ order.order_number|default:"—" }}</td>
+                  <td>{{ order.created_at|date:"d.m.Y H:i:s" }}</td>
+                  <td>
+                    {% if order.tariff_group.profile and order.tariff_group.profile.public_name %}
+                      {{ order.tariff_group.profile.public_name }}
+                    {% else %}
+                      {{ order.tariff_group.name }}
+                    {% endif %}
+                  </td>
+                  <td>{{ order.amount }}</td>
+                  <td>{{ order.currency }}</td>
+                  <td>
+                    {% if order.status == "paid" %}
+                      <span class="status status-ok">Оплачен</span>
+                    {% elif order.status == "pending" %}
+                      <span class="status status-progress">Ожидает оплаты</span>
+                    {% else %}
+                      <span class="status status-bad">Ошибка регистрации</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if order.paid_at %}
+                      {{ order.paid_at|date:"d.m.Y H:i:s" }}
+                    {% else %}
+                      —
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="alert alert-neutral">История платежей пока пуста.</p>
+      {% endif %}
+    </div>
+  </article>
+</section>
+{% endblock %}

@@ -1,6 +1,15 @@
 (function () {
   let sectionsCache = null;
 
+  function relabelAddButton() {
+    document.querySelectorAll('#items-group .add-row a').forEach(function (link) {
+      const text = (link.textContent || '').trim();
+      if (text.indexOf('Add another') !== -1 && text.indexOf('Элемент курса') !== -1) {
+        link.textContent = 'Добавить элемент курса';
+      }
+    });
+  }
+
   function clearSelect(select, placeholder) {
     if (!select) return;
     select.innerHTML = "";
@@ -157,11 +166,13 @@
   }
 
   document.addEventListener("DOMContentLoaded", function () {
+    relabelAddButton();
     initExistingRows();
 
     document.addEventListener("formset:added", function (event) {
       const row = event.target;
       window.setTimeout(function () {
+        relabelAddButton();
         initNewRow(row);
       }, 0);
     });
@@ -169,6 +180,7 @@
     const tbody = document.querySelector("#items-group tbody");
     if (tbody && window.MutationObserver) {
       const observer = new MutationObserver(function (mutations) {
+        relabelAddButton();
         mutations.forEach(function (mutation) {
           mutation.addedNodes.forEach(function (node) {
             if (!(node instanceof HTMLElement)) return;

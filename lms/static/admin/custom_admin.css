@@ -1674,3 +1674,91 @@ body.app-courses.model-paymentorder.change-form #content-main .readonly a {
   word-break: break-word;
   overflow-wrap: anywhere;
 }
+
+body.app-courses.model-learningcourse .tg-light-shell .tabular.inline-related tbody td {
+  padding: 4px 6px;
+  vertical-align: middle;
+}
+
+body.app-courses.model-learningcourse .tg-light-shell .tabular.inline-related select,
+body.app-courses.model-learningcourse .tg-light-shell .tabular.inline-related input[type="text"],
+body.app-courses.model-learningcourse .tg-light-shell .tabular.inline-related input[type="number"] {
+  min-height: 30px;
+  padding: 4px 8px;
+}
+
+body.app-courses.model-learningcourse .tg-light-shell .tabular.inline-related thead th {
+  padding: 8px 8px;
+}
+
+body.app-courses.model-learningcourse .tg-light-shell #items-group .tabular.inline-related tbody td,
+body.app-courses.model-learningcourse .tg-light-shell .tg-course-items-inline .tabular.inline-related tbody td {
+  padding-top: 2px !important;
+  padding-bottom: 2px !important;
+  padding-left: 6px !important;
+  padding-right: 6px !important;
+  vertical-align: middle !important;
+}
+
+body.app-courses.model-learningcourse .tg-light-shell #items-group .tabular.inline-related select,
+body.app-courses.model-learningcourse .tg-light-shell #items-group .tabular.inline-related input[type="text"],
+body.app-courses.model-learningcourse .tg-light-shell #items-group .tabular.inline-related input[type="number"],
+body.app-courses.model-learningcourse .tg-light-shell .tg-course-items-inline .tabular.inline-related select,
+body.app-courses.model-learningcourse .tg-light-shell .tg-course-items-inline .tabular.inline-related input[type="text"],
+body.app-courses.model-learningcourse .tg-light-shell .tg-course-items-inline .tabular.inline-related input[type="number"] {
+  min-height: 24px !important;
+  height: 24px !important;
+  padding-top: 2px !important;
+  padding-bottom: 2px !important;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+  line-height: 1.1 !important;
+}
+
+body.app-courses.model-learningcourse .tg-light-shell #items-group .tabular.inline-related tbody tr,
+body.app-courses.model-learningcourse .tg-light-shell .tg-course-items-inline .tabular.inline-related tbody tr {
+  height: 34px !important;
+}
+
+body.app-courses.model-learningcourse .tg-light-shell #items-group .inline-group .tabular tr.has_original td,
+body.app-courses.model-learningcourse .tg-light-shell #items-group .inline-group .tabular tr.has_original th,
+body.app-courses.model-learningcourse .tg-light-shell .tg-course-items-inline .inline-group .tabular tr.has_original td,
+body.app-courses.model-learningcourse .tg-light-shell .tg-course-items-inline .inline-group .tabular tr.has_original th,
+body.app-courses.model-learningcourse .tg-light-shell #items-group .tabular tr.has_original td,
+body.app-courses.model-learningcourse .tg-light-shell .tg-course-items-inline .tabular tr.has_original td {
+  padding-top: 2px !important;
+}
+
+body.app-courses.model-learningcourse .tg-light-shell #items-group .related-widget-wrapper,
+body.app-courses.model-learningcourse .tg-light-shell .tg-course-items-inline .related-widget-wrapper {
+  margin-bottom: 0 !important;
+}
+
+.tg-inline .tg-inline-body:not(.empty-form) {
+  margin-top: 14px;
+  padding: 16px 18px;
+  border: 1px solid #dbe7f3;
+  border-radius: 14px;
+  background: #fbfdff;
+}
+
+.tg-inline .tg-inline-body:not(.empty-form) + .tg-inline-body:not(.empty-form) {
+  margin-top: 16px;
+}
+
+.tg-inline .tg-inline-body.empty-form {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px dashed #dbe7f3;
+}
+
+.tg-inline .tg-inline-body .tg-inline-subtitle {
+  padding-bottom: 12px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid #e6eef7;
+}
+
+.tg-inline-subtitle-left {
+  display: inline-flex;
+  align-items: center;
+}

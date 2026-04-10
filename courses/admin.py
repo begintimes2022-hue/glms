@@ -144,6 +144,13 @@ class QuestionInlineForm(forms.ModelForm):
     class Meta:
         model = Question
         fields = ["question_text", "option_a", "option_b", "option_c", "option_d"]
+        labels = {
+            "question_text": "Текст вопроса",
+            "option_a": "Вариант A",
+            "option_b": "Вариант B",
+            "option_c": "Вариант C",
+            "option_d": "Вариант D",
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -192,6 +199,13 @@ class LearningCourseFinalQuestionInlineForm(forms.ModelForm):
     class Meta:
         model = LearningCourseFinalQuestion
         fields = ["question_text", "option_a", "option_b", "option_c", "option_d"]
+        labels = {
+            "question_text": "Текст вопроса",
+            "option_a": "Вариант A",
+            "option_b": "Вариант B",
+            "option_c": "Вариант C",
+            "option_d": "Вариант D",
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -589,7 +603,7 @@ class LearningCourseAdmin(admin.ModelAdmin):
         return _is_admins_or_superuser(request.user)
 
     class Media:
-        js = ("courses/admin/learning_course_items.js",)
+        js = ("courses/admin/learning_course_items.js", "courses/admin/question_inline_i18n.js")
 
 
 class QuestionInline(admin.StackedInline):
@@ -610,6 +624,9 @@ class LessonAdmin(admin.ModelAdmin):
     search_fields = ["title"]
     ordering = ["course__section", "course", "order", "id"]
     inlines = [QuestionInline]
+
+    class Media:
+        js = ("courses/admin/question_inline_i18n.js",)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request).select_related("course", "course__section")

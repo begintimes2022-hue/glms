@@ -5,7 +5,6 @@ from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 from urllib.request import Request, urlopen
 
 from django.contrib.auth.models import Group, User
-from django.db.models import Max
 from django.urls import reverse
 from django.utils import timezone
 
@@ -36,6 +35,12 @@ def _masked_request_payload(payload: dict) -> dict:
     if masked.get("password"):
         masked["password"] = "********"
     return masked
+
+
+def _generate_julian_order_number() -> int:
+    current = timezone.localtime()
+    # YYYY + day-of-year + time + microseconds => numeric Julian date-time representation.
+    return int(current.strftime("%Y%j%H%M%S%f"))
 
 
 def _profile_for_group(tariff_group: Group):
@@ -69,11 +74,12 @@ def register_payment_order(request, user: User, tariff_group: Group) -> PaymentO
     profile = _profile_for_group(tariff_group)
     _validate_payment_profile(profile)
 
-    last_order_number = PaymentOrder.objects.aggregate(max_number=Max("order_number")).get("max_number")
-    next_order_number = (last_order_number + 10) if last_order_number is not None else 0
+    order_number = _generate_julian_order_number()
+    while PaymentOrder.objects.filter(order_number=order_number).exists():
+        order_number += 1
 
     order = PaymentOrder.objects.create(
-        order_number=next_order_number,
+        order_number=order_number,
         user=user,
         tariff_group=tariff_group,
         amount=profile.payment_amount,

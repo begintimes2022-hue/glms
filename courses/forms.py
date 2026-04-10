@@ -42,6 +42,7 @@ class RegistrationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["tariff_code"].label_from_instance = self._tariff_label
+        self.fields["username"].help_text = "Обязательно. Не более 150 символов. Только буквы, цифры и символы @/./+/-/_."
 
     @staticmethod
     def _tariff_label(group: Group):

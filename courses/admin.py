@@ -263,6 +263,7 @@ class GroupProfileAdminForm(forms.ModelForm):
         fields = [
             "public_name",
             "is_admin_group",
+            "show_kb_menu",
             "access_duration_days",
             "created_by",
             "payment_amount",
@@ -278,6 +279,7 @@ class GroupProfileAdminForm(forms.ModelForm):
         labels = {
             "public_name": "Название для пользователя",
             "is_admin_group": "Группа администраторов",
+            "show_kb_menu": "Показывать вкладку базы знаний",
             "access_duration_days": "Срок доступа, дней",
             "created_by": "Создал",
             "payment_amount": "amount",
@@ -297,6 +299,7 @@ class GroupProfileAdminForm(forms.ModelForm):
             "payment_password": "Пароль для вызова register.do.",
             "payment_description": "Описание заказа, которое отправляется в платежный шлюз.",
             "payment_language": "Язык платежной формы, например ru или en.",
+            "show_kb_menu": "Если включено, пользователь этой группы видит вкладку 'База знаний' в личном кабинете.",
             "allowed_kb_lessons": "Доступ только к выбранным отдельным статьям базы знаний.",
             "allowed_kb_courses": "Доступ ко всем статьям выбранных модулей в базе знаний.",
             "allowed_kb_sections": "Доступ ко всем модулям и статьям выбранных разделов базы знаний.",

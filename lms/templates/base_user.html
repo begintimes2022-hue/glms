@@ -43,9 +43,11 @@
                 <li>
                     <a class="nav-link {% if active_menu == 'learning_courses' %}active{% endif %}" href="{{ learning_courses_url }}">Мои курсы</a>
                 </li>
+                {% if can_see_kb_menu %}
                 <li>
                     <a class="nav-link {% if active_menu == 'kb' %}active{% endif %}" href="{{ kb_url }}">База знаний</a>
                 </li>
+                {% endif %}
             </ul>
         </aside>
 

@@ -398,6 +398,7 @@ class GroupProfile(models.Model):
     group = models.OneToOneField(Group, on_delete=models.CASCADE, related_name="profile")
     public_name = models.CharField(max_length=200)
     is_admin_group = models.BooleanField(default=False)
+    show_kb_menu = models.BooleanField(default=False)
     access_duration_days = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(

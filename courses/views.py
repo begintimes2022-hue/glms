@@ -138,6 +138,14 @@ def _user_allowed_kb_courses(user):
     )
 
 
+def _user_can_see_kb_menu(user) -> bool:
+    if not user.is_authenticated:
+        return False
+    if _is_admin_or_superuser(user):
+        return True
+    return GroupProfile.objects.filter(group__in=user.groups.all(), show_kb_menu=True).exists()
+
+
 def _user_has_kb_access(user) -> bool:
     if not user.is_authenticated:
         return False
@@ -146,7 +154,7 @@ def _user_has_kb_access(user) -> bool:
     access_state, _ = _courses_access_state(user)
     if access_state != "active":
         return False
-    profiles = GroupProfile.objects.filter(group__in=user.groups.all()).distinct()
+    profiles = GroupProfile.objects.filter(group__in=user.groups.all(), show_kb_menu=True).distinct()
     return (
         profiles.filter(allowed_kb_lessons__isnull=False).exists()
         or profiles.filter(allowed_kb_courses__isnull=False).exists()
@@ -158,6 +166,7 @@ def _base_user_context(request, *, active_menu: str):
     return {
         "active_menu": active_menu,
         "has_kb_access": _user_has_kb_access(request.user),
+        "can_see_kb_menu": _user_can_see_kb_menu(request.user),
     }
 
 

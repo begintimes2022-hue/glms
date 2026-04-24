@@ -10,7 +10,7 @@ from django.shortcuts import redirect
 from django.contrib import messages
 from django.template.response import TemplateResponse
 from django.urls import path, reverse
-from django.db.models import Count, Q
+from django.db.models import Count, Min, Q
 from django.utils.html import format_html
 from django.utils import timezone
 from zoneinfo import ZoneInfo
@@ -1023,6 +1023,23 @@ def admin_courses_table(request):
     tariff_code = request.GET.get("tariff_code", "").strip()
     lessons_min = request.GET.get("lessons_min", "").strip()
     has_final = request.GET.get("has_final", "").strip()
+    sort = request.GET.get("sort", "id").strip() or "id"
+    direction = request.GET.get("dir", "asc").strip().lower()
+    if direction not in {"asc", "desc"}:
+        direction = "asc"
+
+    sort_map = {
+        "id": "id",
+        "title": "title",
+        "section": "section__title",
+        "created_by": "created_by__username",
+        "groups": "group_sort_name",
+        "lessons_count": "lessons_count",
+        "final_count": "final_count",
+        "created_at": "created_at",
+    }
+    sort_field = sort_map.get(sort, "id")
+    order_by = sort_field if direction == "asc" else f"-{sort_field}"
 
     courses = (
         Course.objects.all()
@@ -1031,8 +1048,8 @@ def admin_courses_table(request):
         .annotate(
             lessons_count=Count("lessons", distinct=True),
             final_count=Count("lessons", filter=Q(lessons__is_final=True), distinct=True),
+            group_sort_name=Min("allowed_groups__profile__public_name"),
         )
-        .order_by("title", "id")
     )
 
     if title:
@@ -1049,6 +1066,8 @@ def admin_courses_table(request):
         else:
             courses = courses.filter(final_count=0)
 
+    courses = courses.order_by(order_by, "id")
+
     rows = []
     for c in courses:
         groups = [g for g in c.allowed_groups.all() if hasattr(g, "profile") and g.name != "admins"]
@@ -1062,6 +1081,15 @@ def admin_courses_table(request):
         .order_by("username", "id")
     )
 
+    def sort_query(column):
+        params = request.GET.copy()
+        current_sort = sort
+        current_dir = direction
+        next_dir = "desc" if current_sort == column and current_dir == "asc" else "asc"
+        params["sort"] = column
+        params["dir"] = next_dir
+        return params.urlencode()
+
     context = {
         **admin.site.each_context(request),
         "title": "Модули",
@@ -1074,6 +1102,18 @@ def admin_courses_table(request):
             "tariff_code": tariff_code,
             "lessons_min": lessons_min,
             "has_final": has_final,
+        },
+        "sort": sort,
+        "dir": direction,
+        "sort_queries": {
+            "id": sort_query("id"),
+            "title": sort_query("title"),
+            "section": sort_query("section"),
+            "created_by": sort_query("created_by"),
+            "groups": sort_query("groups"),
+            "lessons_count": sort_query("lessons_count"),
+            "final_count": sort_query("final_count"),
+            "created_at": sort_query("created_at"),
         },
     }
     return TemplateResponse(request, "admin/courses_table.html", context)

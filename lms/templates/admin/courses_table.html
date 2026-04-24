@@ -23,14 +23,14 @@
         <table class="tg-table">
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Название</th>
-              <th>Раздел</th>
-              <th>Автор</th>
-              <th>Назначенная группа</th>
-              <th class="text-center">Статьи</th>
-              <th class="text-center">Финальный тест</th>
-              <th class="text-center">Создан</th>
+              <th><a href="?{{ sort_queries.id }}">ID{% if sort == "id" %} {% if dir == "asc" %}↑{% else %}↓{% endif %}{% endif %}</a></th>
+              <th><a href="?{{ sort_queries.title }}">Название{% if sort == "title" %} {% if dir == "asc" %}↑{% else %}↓{% endif %}{% endif %}</a></th>
+              <th><a href="?{{ sort_queries.section }}">Раздел{% if sort == "section" %} {% if dir == "asc" %}↑{% else %}↓{% endif %}{% endif %}</a></th>
+              <th><a href="?{{ sort_queries.created_by }}">Автор{% if sort == "created_by" %} {% if dir == "asc" %}↑{% else %}↓{% endif %}{% endif %}</a></th>
+              <th><a href="?{{ sort_queries.groups }}">Назначенная группа{% if sort == "groups" %} {% if dir == "asc" %}↑{% else %}↓{% endif %}{% endif %}</a></th>
+              <th class="text-center"><a href="?{{ sort_queries.lessons_count }}">Статьи{% if sort == "lessons_count" %} {% if dir == "asc" %}↑{% else %}↓{% endif %}{% endif %}</a></th>
+              <th class="text-center"><a href="?{{ sort_queries.final_count }}">Финальный тест{% if sort == "final_count" %} {% if dir == "asc" %}↑{% else %}↓{% endif %}{% endif %}</a></th>
+              <th class="text-center"><a href="?{{ sort_queries.created_at }}">Создан{% if sort == "created_at" %} {% if dir == "asc" %}↑{% else %}↓{% endif %}{% endif %}</a></th>
               <th class="text-right">Действия</th>
             </tr>
             <tr class="tg-filter-row">

@@ -2,6 +2,7 @@ import re
 
 from django import forms
 from django.contrib.auth import get_user_model
+from django.contrib.auth.password_validation import password_validators_help_text_html
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import Group
 
@@ -97,3 +98,45 @@ class RegistrationForm(forms.ModelForm):
             if tariff_group:
                 user.groups.add(tariff_group)
         return user
+
+
+class PasswordChangeWithPolicyForm(forms.Form):
+    current_password = forms.CharField(
+        label="Текущий пароль",
+        widget=forms.PasswordInput,
+        required=True,
+    )
+    new_password1 = forms.CharField(
+        label="Новый пароль",
+        widget=forms.PasswordInput,
+        required=True,
+        help_text="Минимум 10 символов, хотя бы 1 буква, 1 цифра и 1 спецсимвол.",
+    )
+    new_password2 = forms.CharField(
+        label="Новый пароль еще раз",
+        widget=forms.PasswordInput,
+        required=True,
+    )
+
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super().__init__(*args, **kwargs)
+
+    def clean_current_password(self):
+        password = self.cleaned_data.get("current_password") or ""
+        if not self.user.check_password(password):
+            raise ValidationError("Текущий пароль указан неверно.")
+        return password
+
+    def clean_new_password2(self):
+        password1 = self.cleaned_data.get("new_password1") or ""
+        password2 = self.cleaned_data.get("new_password2") or ""
+        if password1 and password2 and password1 != password2:
+            raise ValidationError("Пароли не совпадают.")
+        RegistrationForm._validate_password_rules(password1)
+        return password2
+
+    def save(self):
+        self.user.set_password(self.cleaned_data["new_password1"])
+        self.user.save(update_fields=["password"])
+        return self.user

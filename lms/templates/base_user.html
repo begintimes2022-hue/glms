@@ -22,6 +22,7 @@
         {% if user.is_authenticated %}
             <div class="topbar-right">
                 <span class="user-pill">{{ user.username }}</span>
+                <a class="btn btn-ghost" href="{% url 'courses:password_change' %}">Сменить пароль</a>
                 <form method="post" action="{% url 'logout' %}">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-danger">Выйти</button>

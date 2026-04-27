@@ -7,6 +7,7 @@ urlpatterns = [
     path("", views.profile, name="profile"),
     path("payments/return/", views.payment_return, name="payment_return"),
     path("payments/history/", views.payment_history, name="payment_history"),
+    path("password/change/", views.password_change, name="password_change"),
     path("payments/retry/", views.repeat_payment, name="repeat_payment"),
     path("learning-courses/", views.learning_course_list, name="learning_list"),
     path("learning-courses/<int:learning_course_id>/", views.learning_course_detail, name="learning_detail"),

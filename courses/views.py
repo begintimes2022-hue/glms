@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import login
+from django.contrib.auth import login, update_session_auth_hash
 from django.contrib import messages
 from django.db.models import Max, Prefetch
 from django.db import transaction
@@ -26,7 +26,7 @@ from .models import (
     PaymentOrder,
     normalize_answer_codes,
 )
-from .forms import RegistrationForm
+from .forms import PasswordChangeWithPolicyForm, RegistrationForm
 from .payments import (
     PaymentGatewayError,
     activate_payment_order,
@@ -229,6 +229,29 @@ def register(request):
         "registration/register.html",
         {
             "form": form,
+        },
+    )
+
+
+@login_required
+def password_change(request):
+    changed = request.GET.get("changed") == "1"
+    if request.method == "POST":
+        form = PasswordChangeWithPolicyForm(request.user, request.POST)
+        if form.is_valid():
+            form.save()
+            update_session_auth_hash(request, request.user)
+            return redirect(f"{reverse('courses:password_change')}?changed=1")
+    else:
+        form = PasswordChangeWithPolicyForm(request.user)
+
+    return render(
+        request,
+        "courses/password_change.html",
+        {
+            "form": form,
+            "changed": changed,
+            **_base_user_context(request, active_menu="profile"),
         },
     )
 

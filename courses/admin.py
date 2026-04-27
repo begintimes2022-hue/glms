@@ -67,7 +67,7 @@ class QuestionAdminForm(forms.ModelForm):
     is_correct_d = forms.BooleanField(required=False, label="Верный")
 
     course = forms.ModelChoiceField(
-        queryset=Course.objects.all().order_by("title", "id"),
+        queryset=Course.objects.all().order_by("order", "title", "id"),
         required=False,
         label="Модуль",
         help_text="Сначала выберите модуль, чтобы отфильтровать статьи.",
@@ -315,7 +315,7 @@ class GroupProfileAdminForm(forms.ModelForm):
         self.fields["allowed_kb_lessons"].queryset = Lesson.objects.select_related("course", "course__section").order_by(
             "course__section__order", "course__title", "order", "id"
         )
-        self.fields["allowed_kb_courses"].queryset = Course.objects.order_by("title", "id")
+        self.fields["allowed_kb_courses"].queryset = Course.objects.order_by("order", "title", "id")
         self.fields["allowed_kb_sections"].queryset = KnowledgeBaseSection.objects.order_by("order", "title", "id")
 
 
@@ -460,6 +460,7 @@ class CourseAdminForm(forms.ModelForm):
             "section": "Раздел",
             "title": "Название",
             "description": "Описание",
+            "order": "Порядок",
             "created_by": "Создал",
             "allowed_groups": "Доступные группы",
         }
@@ -511,8 +512,9 @@ class QuestionAdmin(admin.ModelAdmin):
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
     form = CourseAdminForm
-    list_display = ["title", "section", "created_by", "created_at"]
+    list_display = ["title", "section", "order", "created_by", "created_at"]
     list_filter = ["section", "created_at"]
+    ordering = ["order", "title", "id"]
     search_fields = ["title"]
 
     class Media:
@@ -651,7 +653,7 @@ class LessonAdmin(admin.ModelAdmin):
         selected_module_id = request.GET.get("module_id", "").strip()
 
         sections = KnowledgeBaseSection.objects.order_by("order", "title", "id")
-        modules = Course.objects.select_related("section").order_by("title", "id")
+        modules = Course.objects.select_related("section").order_by("order", "title", "id")
         if selected_section_id.isdigit():
             modules = modules.filter(section_id=int(selected_section_id))
 
@@ -867,7 +869,7 @@ def admin_modules_by_section(request, section_id: int):
 
     modules = (
         Course.objects.filter(section_id=section_id)
-        .order_by("title", "id")
+        .order_by("order", "title", "id")
         .values("id", "title")
     )
     data = [{"id": m["id"], "title": m["title"]} for m in modules]
@@ -897,7 +899,7 @@ def admin_courses_progress(request):
     if tariff_code:
         users = users.filter(groups__name=tariff_code, groups__profile__isnull=False).distinct()
 
-    courses = Course.objects.all().prefetch_related("allowed_groups").order_by("title", "id")
+    courses = Course.objects.all().prefetch_related("allowed_groups").order_by("order", "title", "id")
     if course_id.isdigit():
         courses = courses.filter(id=int(course_id))
 
@@ -948,7 +950,7 @@ def admin_courses_progress(request):
     rows = [row for row in rows if include_row(row)]
 
     users_for_filter = User.objects.all().order_by("username", "id")
-    courses_for_filter = Course.objects.all().order_by("title", "id")
+    courses_for_filter = Course.objects.all().order_by("order", "title", "id")
     groups_for_filter = _tariff_groups_queryset()
 
     context = {
@@ -1037,6 +1039,7 @@ def admin_courses_table(request):
 
     sort_map = {
         "id": "id",
+        "order": "order",
         "title": "title",
         "section": "section__title",
         "created_by": "created_by__username",
@@ -1114,6 +1117,7 @@ def admin_courses_table(request):
         "dir": direction,
         "sort_queries": {
             "id": sort_query("id"),
+            "order": sort_query("order"),
             "title": sort_query("title"),
             "section": sort_query("section"),
             "created_by": sort_query("created_by"),

@@ -24,6 +24,7 @@
           <thead>
             <tr>
               <th><a href="?{{ sort_queries.id }}">ID{% if sort == "id" %} {% if dir == "asc" %}↑{% else %}↓{% endif %}{% endif %}</a></th>
+              <th class="text-center"><a href="?{{ sort_queries.order }}">Порядок{% if sort == "order" %} {% if dir == "asc" %}↑{% else %}↓{% endif %}{% endif %}</a></th>
               <th><a href="?{{ sort_queries.title }}">Название{% if sort == "title" %} {% if dir == "asc" %}↑{% else %}↓{% endif %}{% endif %}</a></th>
               <th><a href="?{{ sort_queries.section }}">Раздел{% if sort == "section" %} {% if dir == "asc" %}↑{% else %}↓{% endif %}{% endif %}</a></th>
               <th><a href="?{{ sort_queries.created_by }}">Автор{% if sort == "created_by" %} {% if dir == "asc" %}↑{% else %}↓{% endif %}{% endif %}</a></th>
@@ -34,6 +35,7 @@
               <th class="text-right">Действия</th>
             </tr>
             <tr class="tg-filter-row">
+              <th></th>
               <th></th>
               <th><input type="text" name="title" value="{{ filters.title }}" placeholder="Название"></th>
               <th></th>
@@ -71,6 +73,7 @@
             {% for row in rows %}
               <tr>
                 <td>{{ row.course.id }}</td>
+                <td class="text-center">{{ row.course.order }}</td>
                 <td>{{ row.course.title }}</td>
                 <td><strong>{{ row.course.section.title|default:"—" }}</strong></td>
                 <td>{{ row.course.created_by.username }}</td>
@@ -85,7 +88,7 @@
                 </td>
               </tr>
             {% empty %}
-              <tr><td colspan="9" class="text-center">Модули не найдены</td></tr>
+              <tr><td colspan="10" class="text-center">Модули не найдены</td></tr>
             {% endfor %}
           </tbody>
         </table>

@@ -776,3 +776,20 @@ body {
 .payment-history-table tbody tr:last-child td {
   border-bottom: 0;
 }
+
+
+.app-main,
+.app-main * {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.app-main input,
+.app-main textarea,
+.app-main select,
+.app-main button,
+.app-main a,
+.app-main label {
+  -webkit-user-select: auto;
+  user-select: auto;
+}

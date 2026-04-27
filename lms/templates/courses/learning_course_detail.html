@@ -42,18 +42,13 @@
                   <span>{{ item.sequence_index }}. {{ item.title }}</span>
                 {% endif %}
               </h3>
+              {% if item.section or item.module %}
               <p class="muted">
-                {% if item.kind == "final_test" %}
-                  Итоговый тест
-                {% elif item.kind == "test" %}
-                  Тест
-                {% else %}
-                  Статья
-                {% endif %}
-                {% if item.section %} · {{ item.section.title }}{% endif %}
-                {% if item.module %} · {{ item.module.title }}{% endif %}
-                {% if item.source_type == "module" %} · Из модуля целиком{% endif %}
+                {% if item.section %}{{ item.section.title }}{% endif %}
+                {% if item.section and item.module %} · {% endif %}
+                {% if item.module %}{{ item.module.title }}{% endif %}
               </p>
+              {% endif %}
             </div>
             <div class="lesson-meta">
               {% if item.access_state == "completed" %}

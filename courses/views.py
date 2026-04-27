@@ -1045,7 +1045,7 @@ def kb_list(request):
         .prefetch_related(
             Prefetch(
                 "modules",
-                queryset=Course.objects.order_by("title", "id").prefetch_related(
+                queryset=Course.objects.order_by("order", "title", "id").prefetch_related(
                     Prefetch("lessons", queryset=Lesson.objects.order_by("order", "id"))
                 ),
             )

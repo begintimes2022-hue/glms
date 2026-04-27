@@ -44,6 +44,10 @@ def _tariff_groups_queryset():
     return Group.objects.filter(profile__isnull=False, profile__is_admin_group=False).order_by("name")
 
 
+def _assignable_groups_queryset():
+    return Group.objects.filter(profile__isnull=False).order_by("name")
+
+
 def _get_user_tariff_group(user):
     return (
         user.groups.filter(profile__isnull=False)
@@ -539,7 +543,7 @@ class CourseAdmin(admin.ModelAdmin):
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         formfield = super().formfield_for_manytomany(db_field, request, **kwargs)
         if db_field.name == "allowed_groups":
-            formfield.queryset = _tariff_groups_queryset()
+            formfield.queryset = _assignable_groups_queryset()
         return formfield
 
     def has_delete_permission(self, request, obj=None):
@@ -599,7 +603,7 @@ class LearningCourseAdmin(admin.ModelAdmin):
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         formfield = super().formfield_for_manytomany(db_field, request, **kwargs)
         if db_field.name == "allowed_groups":
-            formfield.queryset = _tariff_groups_queryset()
+            formfield.queryset = _assignable_groups_queryset()
         return formfield
 
     def has_delete_permission(self, request, obj=None):
@@ -1004,7 +1008,7 @@ def admin_users_table(request):
         **admin.site.each_context(request),
         "title": "Пользователи",
         "rows": rows,
-        "groups_for_filter": _tariff_groups_queryset(),
+        "groups_for_filter": _assignable_groups_queryset(),
         "filters": {
             "username": username,
             "email": email,
@@ -1073,7 +1077,7 @@ def admin_courses_table(request):
 
     rows = []
     for c in courses:
-        groups = [g for g in c.allowed_groups.all() if hasattr(g, "profile") and g.name != "admins"]
+        groups = [g for g in c.allowed_groups.all() if hasattr(g, "profile")]
         groups_str = ", ".join(f"{g.profile.public_name} ({g.name})" for g in groups) or "—"
         rows.append({"course": c, "groups_str": groups_str})
 

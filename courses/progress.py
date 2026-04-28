@@ -123,7 +123,7 @@ def expand_learning_course_items(learning_course, user):
             Lesson.objects
             .filter(course__section_id__in=section_ids)
             .select_related("course", "course__section")
-            .order_by("course__section_id", "course__title", "course_id", "order", "id")
+            .order_by("course__section_id", "course__order", "course__title", "course_id", "order", "id")
         )
         section_lessons = list(annotate_lessons_with_user_progress(section_lessons, user))
         for lesson in section_lessons:
@@ -134,7 +134,8 @@ def expand_learning_course_items(learning_course, user):
         module_lessons = (
             Lesson.objects
             .filter(course_id__in=module_ids)
-            .order_by("course_id", "order", "id")
+            .select_related("course", "course__section")
+            .order_by("course__order", "course_id", "order", "id")
         )
         module_lessons = list(annotate_lessons_with_user_progress(module_lessons, user))
         for lesson in module_lessons:
@@ -151,46 +152,66 @@ def expand_learning_course_items(learning_course, user):
         lessons_map = {lesson.id: lesson for lesson in annotated_lessons}
 
     expanded = []
+
+    def append_expanded_lesson(lesson, source_item, source_type, module, section):
+        expanded.append(
+            ExpandedLearningCourseItem(
+                sequence_index=len(expanded) + 1,
+                kind=LearningCourseItem.ITEM_ARTICLE,
+                title=lesson.title,
+                lesson=lesson,
+                module=module,
+                section=section,
+                source_item=source_item,
+                source_type=source_type,
+                has_test=bool(getattr(lesson, "has_test", False)),
+                viewed=bool(getattr(lesson, "viewed", False)),
+                attempted=bool(getattr(lesson, "attempted", False)),
+                best_score=getattr(lesson, "best_score", None),
+                best_passed=bool(getattr(lesson, "best_passed", False)),
+                learning_course=learning_course,
+            )
+        )
+        if bool(getattr(lesson, "has_test", False)):
+            expanded.append(
+                ExpandedLearningCourseItem(
+                    sequence_index=len(expanded) + 1,
+                    kind=LearningCourseItem.ITEM_TEST,
+                    title=lesson.title,
+                    lesson=lesson,
+                    module=module,
+                    section=section,
+                    source_item=source_item,
+                    source_type=source_type,
+                    has_test=True,
+                    viewed=bool(getattr(lesson, "viewed", False)),
+                    attempted=bool(getattr(lesson, "attempted", False)),
+                    best_score=getattr(lesson, "best_score", None),
+                    best_passed=bool(getattr(lesson, "best_passed", False)),
+                    learning_course=learning_course,
+                )
+            )
+
     for item in raw_items:
         if item.item_type == LearningCourseItem.ITEM_SECTION and item.section_id:
             for lesson in section_lessons_map.get(item.section_id, []):
-                expanded.append(
-                    ExpandedLearningCourseItem(
-                        sequence_index=len(expanded) + 1,
-                        kind=LearningCourseItem.ITEM_ARTICLE,
-                        title=lesson.title,
-                        lesson=lesson,
-                        module=lesson.course,
-                        section=item.section,
-                        source_item=item,
-                        source_type=item.item_type,
-                        has_test=bool(getattr(lesson, "has_test", False)),
-                        viewed=bool(getattr(lesson, "viewed", False)),
-                        attempted=bool(getattr(lesson, "attempted", False)),
-                        best_score=getattr(lesson, "best_score", None),
-                        best_passed=bool(getattr(lesson, "best_passed", False)),
-                    )
+                append_expanded_lesson(
+                    lesson=lesson,
+                    source_item=item,
+                    source_type=item.item_type,
+                    module=lesson.course,
+                    section=item.section,
                 )
             continue
 
         if item.item_type == LearningCourseItem.ITEM_MODULE and item.module_id:
             for lesson in module_lessons_map.get(item.module_id, []):
-                expanded.append(
-                    ExpandedLearningCourseItem(
-                        sequence_index=len(expanded) + 1,
-                        kind=LearningCourseItem.ITEM_ARTICLE,
-                        title=lesson.title,
-                        lesson=lesson,
-                        module=item.module,
-                        section=getattr(item.module, "section", None),
-                        source_item=item,
-                        source_type=item.item_type,
-                        has_test=bool(getattr(lesson, "has_test", False)),
-                        viewed=bool(getattr(lesson, "viewed", False)),
-                        attempted=bool(getattr(lesson, "attempted", False)),
-                        best_score=getattr(lesson, "best_score", None),
-                        best_passed=bool(getattr(lesson, "best_passed", False)),
-                    )
+                append_expanded_lesson(
+                    lesson=lesson,
+                    source_item=item,
+                    source_type=item.item_type,
+                    module=item.module,
+                    section=getattr(item.module, "section", None),
                 )
             continue
 

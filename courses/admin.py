@@ -48,10 +48,9 @@ def _assignable_groups_queryset():
     return Group.objects.filter(profile__isnull=False).order_by("name")
 
 
-def _get_user_tariff_group(user):
+def _get_user_admin_group(user):
     return (
         user.groups.filter(profile__isnull=False)
-        .filter(profile__is_admin_group=False)
         .order_by("name")
         .first()
     )
@@ -1264,7 +1263,7 @@ class RegistrationUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True)
     tariff_group = forms.ModelChoiceField(
         required=True,
-        queryset=_tariff_groups_queryset(),
+        queryset=_assignable_groups_queryset(),
         label="Группа",
         empty_label=None,
     )
@@ -1275,13 +1274,13 @@ class RegistrationUserCreationForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["tariff_group"].queryset = _tariff_groups_queryset()
+        self.fields["tariff_group"].queryset = _assignable_groups_queryset()
         self.fields["tariff_group"].label_from_instance = self._tariff_label
         if "username" in self.fields:
             self.fields["username"].label = "Логин"
 
     def _tariff_groups(self):
-        return list(_tariff_groups_queryset())
+        return list(_assignable_groups_queryset())
 
     def _tariff_group_ids(self):
         return [g.id for g in self._tariff_groups()]
@@ -1332,7 +1331,7 @@ class RegistrationUserCreationForm(UserCreationForm):
 class RegistrationUserChangeForm(UserChangeForm):
     tariff_group = forms.ModelChoiceField(
         required=False,
-        queryset=_tariff_groups_queryset(),
+        queryset=_assignable_groups_queryset(),
         label="Группа",
     )
 
@@ -1342,14 +1341,14 @@ class RegistrationUserChangeForm(UserChangeForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["tariff_group"].queryset = _tariff_groups_queryset()
+        self.fields["tariff_group"].queryset = _assignable_groups_queryset()
         self.fields["tariff_group"].label_from_instance = RegistrationUserCreationForm._tariff_label
         if "username" in self.fields:
             self.fields["username"].label = "Логин"
         if "is_staff" in self.fields:
             self.fields["is_staff"].label = "Админ"
         if self.instance and self.instance.pk:
-            current_group = _get_user_tariff_group(self.instance)
+            current_group = _get_user_admin_group(self.instance)
             if current_group:
                 self.fields["tariff_group"].initial = current_group
 
@@ -1358,7 +1357,7 @@ class RegistrationUserChangeForm(UserChangeForm):
         if user.pk is None:
             user.save()
         tariff_group = self.cleaned_data.get("tariff_group")
-        tariff_group_ids = [g.id for g in _tariff_groups_queryset()]
+        tariff_group_ids = [g.id for g in _assignable_groups_queryset()]
         if tariff_group_ids:
             user.groups.remove(*Group.objects.filter(id__in=tariff_group_ids))
         if tariff_group:
@@ -1397,7 +1396,7 @@ class CustomUserAdmin(DjangoUserAdmin):
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
-        tariff_groups = list(_tariff_groups_queryset().filter(user=obj))
+        tariff_groups = list(_assignable_groups_queryset().filter(user=obj))
         if len(tariff_groups) > 1:
             keep = sorted(tariff_groups, key=lambda g: g.name)[0]
             obj.groups.remove(*[g for g in tariff_groups if g.id != keep.id])

@@ -48,7 +48,7 @@ def _assignable_groups_queryset():
     return Group.objects.filter(profile__isnull=False).order_by("name")
 
 
-def _get_user_admin_group(user):
+def _get_user_tariff_group(user):
     return (
         user.groups.filter(profile__isnull=False)
         .order_by("name")
@@ -1348,7 +1348,7 @@ class RegistrationUserChangeForm(UserChangeForm):
         if "is_staff" in self.fields:
             self.fields["is_staff"].label = "Админ"
         if self.instance and self.instance.pk:
-            current_group = _get_user_admin_group(self.instance)
+            current_group = _get_user_tariff_group(self.instance)
             if current_group:
                 self.fields["tariff_group"].initial = current_group
 

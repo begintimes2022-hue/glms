@@ -51,6 +51,9 @@
               {% endif %}
             </div>
             <div class="lesson-meta">
+              {% if item.kind == "test" %}
+                <span class="status status-neutral">Тест</span>
+              {% endif %}
               {% if item.access_state == "completed" %}
                 <span class="status status-ok">Завершен</span>
               {% elif item.access_state == "available" %}

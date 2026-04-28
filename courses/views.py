@@ -21,6 +21,7 @@ from .models import (
     LearningCourseFinalQuestion,
     LearningCourseFinalAttempt,
     LearningCourseFinalAnswer,
+    LearningCourseRelearnState,
     KnowledgeBaseSection,
     GroupProfile,
     UserAccess,
@@ -181,6 +182,31 @@ def _get_course_relearn_state(user, course: Course):
         .filter(user=user, course=course)
         .first()
     )
+
+
+def _get_learning_course_relearn_state(user, learning_course: LearningCourse):
+    if not user.is_authenticated:
+        return None
+    return (
+        LearningCourseRelearnState.objects
+        .select_related("failed_lesson", "source_item", "module")
+        .filter(user=user, learning_course=learning_course)
+        .first()
+    )
+
+
+def _get_learning_course_relearn_article_entries(items, relearn_state: LearningCourseRelearnState):
+    if not relearn_state:
+        return []
+    return [
+        entry
+        for entry in items
+        if entry.kind == LearningCourseItem.ITEM_ARTICLE
+        and entry.source_item
+        and entry.source_item.id == relearn_state.source_item_id
+        and entry.module
+        and entry.module.id == relearn_state.module_id
+    ]
 
 
 def _unlocked_lesson_ids_for_user(courses, user):
@@ -447,6 +473,7 @@ def learning_course_detail(request, learning_course_id: int):
         return redirect("courses:learning_list")
 
     progress = build_learning_course_progress(expand_learning_course_items(learning_course, request.user))
+    relearn_state = _get_learning_course_relearn_state(request.user, learning_course)
     return render(
         request,
         "courses/learning_course_detail.html",
@@ -454,6 +481,7 @@ def learning_course_detail(request, learning_course_id: int):
             "learning_course": learning_course,
             **progress,
             "need_final_threshold_notice": request.GET.get("need_final_threshold") == "1",
+            "relearn_state": relearn_state,
             **_base_user_context(request, active_menu="learning_courses"),
         },
     )
@@ -480,6 +508,24 @@ def learning_course_item_detail(request, learning_course_id: int, position: int)
         return redirect("courses:learning_list")
     if entry is None:
         return redirect("courses:learning_detail", learning_course_id=learning_course_id)
+    relearn_state = _get_learning_course_relearn_state(request.user, learning_course)
+    relearn_articles = _get_learning_course_relearn_article_entries(items, relearn_state)
+    if relearn_state and not relearn_state.reread_complete and relearn_articles:
+        allowed_index = min(relearn_state.unlocked_article_count, len(relearn_articles) - 1)
+        next_article = relearn_articles[allowed_index]
+        allowed_article_indexes = {
+            article.sequence_index for article in relearn_articles[:relearn_state.unlocked_article_count + 1]
+        }
+        if entry.kind == LearningCourseItem.ITEM_TEST and entry.lesson and entry.lesson.id == relearn_state.failed_lesson_id:
+            return redirect(
+                "courses:learning_relearn_required",
+                learning_course_id=learning_course_id,
+                position=position,
+            )
+        if entry.sequence_index not in allowed_article_indexes:
+            return redirect(
+                f"{reverse('courses:learning_item', kwargs={'learning_course_id': learning_course_id, 'position': next_article.sequence_index})}?need_relearn=1"
+            )
     if not entry.is_available:
         if entry.kind == "final_test":
             return redirect(
@@ -505,6 +551,8 @@ def learning_course_item_detail(request, learning_course_id: int, position: int)
             "entry": entry,
             "next_entry": next_entry,
             "need_complete_notice": request.GET.get("need_complete") == "1",
+            "need_relearn_notice": request.GET.get("need_relearn") == "1",
+            "relearn_state": relearn_state,
             **_base_user_context(request, active_menu="learning_courses"),
         },
     )
@@ -521,8 +569,61 @@ def mark_learning_course_item_viewed(request, learning_course_id: int, position:
     if learning_course is None or entry is None or not entry.is_available or not entry.lesson:
         return JsonResponse({"ok": False}, status=403)
 
+    relearn_state = _get_learning_course_relearn_state(request.user, learning_course)
+    if relearn_state and not relearn_state.reread_complete:
+        items = expand_learning_course_items(learning_course, request.user)
+        relearn_articles = _get_learning_course_relearn_article_entries(items, relearn_state)
+        if not relearn_articles:
+            return JsonResponse({"ok": False}, status=403)
+        allowed_index = min(relearn_state.unlocked_article_count, len(relearn_articles) - 1)
+        next_article = relearn_articles[allowed_index]
+        if entry.sequence_index != next_article.sequence_index:
+            return JsonResponse({"ok": False}, status=403)
+        relearn_state.unlocked_article_count = max(
+            relearn_state.unlocked_article_count,
+            allowed_index + 1,
+        )
+        if relearn_state.unlocked_article_count >= len(relearn_articles):
+            relearn_state.reread_complete = True
+        relearn_state.save(update_fields=["unlocked_article_count", "reread_complete", "updated_at"])
+
     LessonView.objects.get_or_create(user=request.user, lesson=entry.lesson)
     return JsonResponse({"ok": True})
+
+
+@login_required
+def learning_course_relearn_required(request, learning_course_id: int, position: int):
+    access_state, _ = _courses_access_state(request.user)
+    if access_state != "active":
+        return redirect("courses:learning_list")
+
+    learning_course, items, entry = _get_learning_course_entry_or_404(request, learning_course_id, position)
+    if learning_course is None:
+        return redirect("courses:learning_list")
+    if entry is None:
+        return redirect("courses:learning_detail", learning_course_id=learning_course_id)
+
+    relearn_state = _get_learning_course_relearn_state(request.user, learning_course)
+    if not relearn_state or not entry.lesson or relearn_state.failed_lesson_id != entry.lesson.id:
+        return redirect("courses:learning_item", learning_course_id=learning_course_id, position=position)
+
+    relearn_articles = _get_learning_course_relearn_article_entries(items, relearn_state)
+    if not relearn_articles:
+        return redirect("courses:learning_detail", learning_course_id=learning_course_id)
+    if relearn_state.reread_complete:
+        return redirect("courses:learning_test", learning_course_id=learning_course_id, position=position)
+
+    return render(
+        request,
+        "courses/learning_course_relearn_required.html",
+        {
+            "learning_course": learning_course,
+            "entry": entry,
+            "first_entry": relearn_articles[0],
+            "relearn_state": relearn_state,
+            **_base_user_context(request, active_menu="learning_courses"),
+        },
+    )
 
 
 @login_required
@@ -539,6 +640,7 @@ def learning_course_test(request, learning_course_id: int, position: int):
     if not entry.is_available:
         return redirect("courses:learning_item", learning_course_id=learning_course_id, position=position)
 
+    relearn_state = _get_learning_course_relearn_state(request.user, learning_course)
     if entry.kind == "final_test":
         questions = learning_course.final_questions.all().order_by("id")
         if questions.count() == 0:
@@ -547,14 +649,51 @@ def learning_course_test(request, learning_course_id: int, position: int):
         failed_count, passed_exists = _course_final_round_stats(request.user, learning_course, current_round)
     else:
         lesson = entry.lesson
+        if (
+            relearn_state
+            and relearn_state.failed_lesson_id == lesson.id
+            and relearn_state.source_item_id == getattr(entry.source_item, "id", None)
+            and not relearn_state.reread_complete
+        ):
+            return redirect(
+                "courses:learning_relearn_required",
+                learning_course_id=learning_course_id,
+                position=position,
+            )
         questions = lesson.questions.all().order_by("id")
         if questions.count() == 0:
             return redirect("courses:learning_item", learning_course_id=learning_course_id, position=position)
         current_round = _get_current_round(request.user, lesson)
+        if (
+            relearn_state
+            and relearn_state.failed_lesson_id == lesson.id
+            and relearn_state.source_item_id == getattr(entry.source_item, "id", None)
+            and relearn_state.reread_complete
+            and current_round < relearn_state.target_round
+        ):
+            current_round = relearn_state.target_round
         failed_count, passed_exists = _round_stats(request.user, lesson, current_round)
 
     locked = (failed_count >= MAX_ATTEMPTS_PER_ROUND and not passed_exists)
     if locked:
+        if entry.kind != "final_test" and entry.source_item and entry.module and entry.lesson:
+            LearningCourseRelearnState.objects.update_or_create(
+                user=request.user,
+                learning_course=learning_course,
+                source_item=entry.source_item,
+                defaults={
+                    "module": entry.module,
+                    "failed_lesson": entry.lesson,
+                    "target_round": current_round + 1,
+                    "unlocked_article_count": 0,
+                    "reread_complete": False,
+                },
+            )
+            return redirect(
+                "courses:learning_relearn_required",
+                learning_course_id=learning_course_id,
+                position=position,
+            )
         return redirect(
             f"{reverse('courses:learning_item', kwargs={'learning_course_id': learning_course_id, 'position': position})}?locked=1"
         )
@@ -610,6 +749,40 @@ def learning_course_test(request, learning_course_id: int, position: int):
         attempt.correct = correct
         attempt.passed = passed
         attempt.save(update_fields=["score", "correct", "passed"])
+        if (
+            entry.kind != "final_test"
+            and relearn_state
+            and relearn_state.failed_lesson_id == lesson.id
+            and relearn_state.source_item_id == getattr(entry.source_item, "id", None)
+            and passed
+            and current_round >= relearn_state.target_round
+        ):
+            relearn_state.delete()
+        if entry.kind != "final_test" and not passed:
+            failed_count_after = LessonAttempt.objects.filter(
+                user=request.user,
+                lesson=lesson,
+                retake_round=current_round,
+                passed=False,
+            ).count()
+            if failed_count_after >= MAX_ATTEMPTS_PER_ROUND and entry.source_item and entry.module:
+                LearningCourseRelearnState.objects.update_or_create(
+                    user=request.user,
+                    learning_course=learning_course,
+                    source_item=entry.source_item,
+                    defaults={
+                        "module": entry.module,
+                        "failed_lesson": lesson,
+                        "target_round": current_round + 1,
+                        "unlocked_article_count": 0,
+                        "reread_complete": False,
+                    },
+                )
+                return redirect(
+                    "courses:learning_relearn_required",
+                    learning_course_id=learning_course_id,
+                    position=position,
+                )
         return redirect("courses:learning_result", learning_course_id=learning_course_id, position=position)
 
     next_entry = next((item for item in items if item.sequence_index == position + 1), None)

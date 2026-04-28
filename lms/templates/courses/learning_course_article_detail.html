@@ -23,6 +23,12 @@
 {% if need_complete_notice %}
   <p class="alert alert-danger">Сначала завершите предыдущий материал курса.</p>
 {% endif %}
+{% if need_relearn_notice %}
+  <p class="alert alert-danger">Сначала заново изучите материалы модуля по порядку, затем возвращайтесь к тесту.</p>
+{% endif %}
+{% if relearn_state and not relearn_state.reread_complete %}
+  <p class="alert alert-neutral">Повторное изучение модуля внутри курса активно. Следующая статья открывается только после прочтения предыдущей.</p>
+{% endif %}
 
 <section class="card">
   <div class="card-body">

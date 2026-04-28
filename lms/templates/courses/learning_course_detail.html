@@ -14,6 +14,9 @@
 
 <section class="card">
   <div class="card-body">
+    {% if relearn_state and not relearn_state.reread_complete %}
+      <p class="alert alert-danger">По одному из тестов модуля попытки исчерпаны. Сначала заново изучите соответствующий модуль внутри курса.</p>
+    {% endif %}
     {% if need_final_threshold_notice %}
       <p class="alert alert-neutral">Итоговый тест откроется после того, как средний результат по тестам статей в этом курсе достигнет 85%.</p>
     {% endif %}

@@ -1,0 +1,24 @@
+{% extends "base_user.html" %}
+
+{% block title %}Повторное изучение курса{% endblock %}
+
+{% block content %}
+<div class="actions">
+  <a href="{% url 'courses:learning_detail' learning_course.id %}" class="btn btn-ghost">← К курсу</a>
+</div>
+
+<section class="page-head">
+  <h1 class="page-title">Попытки теста исчерпаны</h1>
+  <p class="page-subtitle">{{ entry.title }} · {{ learning_course.title }}</p>
+</section>
+
+<section class="card">
+  <div class="card-body">
+    <p class="alert alert-danger">Вы использовали все 3 попытки для этого теста.</p>
+    <p class="alert alert-neutral">Чтобы открыть новый цикл попыток, заново изучите соответствующий модуль внутри курса. Следующая статья будет открываться только после прочтения предыдущей.</p>
+    <div class="actions">
+      <a href="{% url 'courses:learning_item' learning_course.id first_entry.sequence_index %}" class="btn btn-primary">Вернуться к изучению модуля</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

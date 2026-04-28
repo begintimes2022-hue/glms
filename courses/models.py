@@ -362,6 +362,47 @@ class LearningCourseFinalAnswer(models.Model):
         return f"{self.attempt} | Q{self.question_id} -> {self.chosen_answer} ({'ok' if self.is_correct else 'no'})"
 
 
+class LearningCourseRelearnState(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="learning_course_relearn_states")
+    learning_course = models.ForeignKey(
+        LearningCourse,
+        on_delete=models.CASCADE,
+        related_name="relearn_states",
+    )
+    source_item = models.ForeignKey(
+        LearningCourseItem,
+        on_delete=models.CASCADE,
+        related_name="relearn_states",
+    )
+    module = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name="learning_course_relearn_states",
+    )
+    failed_lesson = models.ForeignKey(
+        "Lesson",
+        on_delete=models.CASCADE,
+        related_name="learning_course_relearn_states",
+    )
+    target_round = models.PositiveSmallIntegerField(default=1)
+    unlocked_article_count = models.PositiveIntegerField(default=0)
+    reread_complete = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "learning_course", "source_item"],
+                name="uniq_user_learning_course_relearn_state",
+            )
+        ]
+        ordering = ["-updated_at"]
+
+    def __str__(self):
+        return f"{self.user.username} - {self.learning_course.title} -> {self.failed_lesson.title} (round {self.target_round})"
+
+
 class LessonView(models.Model):
     """
     Фиксируем факт, что пользователь открыл (просмотрел) урок.

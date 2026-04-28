@@ -22,6 +22,11 @@ urlpatterns = [
         name="mark_learning_item_viewed",
     ),
     path(
+        "learning-courses/<int:learning_course_id>/items/<int:position>/relearn-required/",
+        views.learning_course_relearn_required,
+        name="learning_relearn_required",
+    ),
+    path(
         "learning-courses/<int:learning_course_id>/items/<int:position>/test/",
         views.learning_course_test,
         name="learning_test",

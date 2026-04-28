@@ -14,6 +14,9 @@
 
 <section class="card">
   <div class="card-body">
+    {% if relearn_state and not relearn_state.reread_complete %}
+      <p class="alert alert-danger">По тесту статьи "{{ relearn_state.failed_lesson.title }}" попытки исчерпаны. Изучите модуль заново по порядку, чтобы открыть новый цикл попыток.</p>
+    {% endif %}
     {% if course_completed %}
       <p class="alert alert-success">Модуль завершён: все материалы пройдены, итоговый тест сдан ({{ pass_threshold }}%+).</p>
     {% else %}

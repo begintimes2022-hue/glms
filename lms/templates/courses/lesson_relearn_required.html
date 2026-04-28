@@ -1,0 +1,28 @@
+{% extends "base_user.html" %}
+
+{% block title %}Повторное изучение модуля{% endblock %}
+
+{% block content %}
+<div class="actions">
+  <a href="{% url 'courses:detail' course.id %}" class="btn btn-ghost">← К модулю</a>
+</div>
+
+<section class="page-head">
+  <h1 class="page-title">Попытки теста исчерпаны</h1>
+  <p class="page-subtitle">{{ lesson.title }} · {{ course.title }}</p>
+</section>
+
+<section class="card">
+  <div class="card-body">
+    <p class="alert alert-danger">Вы использовали все попытки для этого теста.</p>
+    <p class="alert alert-neutral">Чтобы получить новый цикл из 3 попыток, снова изучите модуль с первой статьи. Каждая следующая статья будет открываться только после прочтения предыдущей.</p>
+    <div class="actions">
+      {% if first_lesson %}
+        <a href="{% url 'courses:lesson' course.id first_lesson.id %}" class="btn btn-primary">Вернуться к изучению модуля</a>
+      {% else %}
+        <a href="{% url 'courses:detail' course.id %}" class="btn btn-primary">Вернуться к модулю</a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

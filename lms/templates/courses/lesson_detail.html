@@ -19,6 +19,12 @@
 {% if need_view_notice %}
   <p class="alert alert-danger">Закончите изучение текущего материала перед тем, как приступить к следующему.</p>
 {% endif %}
+{% if need_relearn_notice %}
+  <p class="alert alert-danger">Сначала заново изучите материалы модуля по порядку, затем возвращайтесь к тесту.</p>
+{% endif %}
+{% if relearn_state and not relearn_state.reread_complete %}
+  <p class="alert alert-neutral">Повторное изучение модуля активно. Следующая статья открывается только после прочтения предыдущей.</p>
+{% endif %}
 
 <section class="card">
   <div class="card-body">
@@ -33,7 +39,7 @@
     <h2 class="card-title">Тест по материалу</h2>
 
     {% if locked %}
-      <p class="alert alert-danger">Лимит попыток исчерпан. Повторите материал, затем начните новый цикл.</p>
+      <p class="alert alert-danger">Лимит попыток исчерпан. Вернитесь к изучению модуля, чтобы открыть новый цикл попыток.</p>
     {% endif %}
 
     {% if questions_count and questions_count|add:"0" > 0 %}
@@ -55,6 +61,10 @@
       {% if not locked %}
         <div class="actions">
           <a href="{% url 'courses:lesson_test' course.id lesson.id %}" class="btn btn-primary">Начать тест</a>
+        </div>
+      {% elif relearn_state %}
+        <div class="actions">
+          <a href="{% url 'courses:lesson_relearn_required' course.id lesson.id %}" class="btn btn-primary">К повторному изучению модуля</a>
         </div>
       {% endif %}
     {% else %}

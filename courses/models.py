@@ -380,6 +380,26 @@ class LessonView(models.Model):
         return f"{self.user.username} viewed {self.lesson.title}"
 
 
+class CourseRelearnState(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="course_relearn_states")
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="relearn_states")
+    failed_lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name="relearn_states")
+    target_round = models.PositiveSmallIntegerField(default=1)
+    unlocked_through_position = models.PositiveIntegerField(default=0)
+    reread_complete = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["user", "course"], name="uniq_user_course_relearn_state")
+        ]
+        ordering = ["-updated_at"]
+
+    def __str__(self):
+        return f"{self.user.username} - {self.course.title} -> {self.failed_lesson.title} (round {self.target_round})"
+
+
 class KnowledgeBaseSection(models.Model):
     title = models.CharField(max_length=200)
     slug = models.SlugField(max_length=200, unique=True)

@@ -35,6 +35,11 @@ urlpatterns = [
     path("modules/<int:course_id>/", views.course_detail, name="detail"),
     path("modules/<int:course_id>/lessons/<int:lesson_id>/", views.lesson_detail, name="lesson"),
     path(
+        "modules/<int:course_id>/lessons/<int:lesson_id>/relearn-required/",
+        views.lesson_relearn_required,
+        name="lesson_relearn_required",
+    ),
+    path(
         "modules/<int:course_id>/lessons/<int:lesson_id>/mark-viewed/",
         views.mark_lesson_viewed,
         name="mark_lesson_viewed",

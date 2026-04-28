@@ -151,9 +151,6 @@ def _user_has_kb_access(user) -> bool:
         return False
     if _is_admin_or_superuser(user):
         return True
-    access_state, _ = _courses_access_state(user)
-    if access_state != "active":
-        return False
     profiles = GroupProfile.objects.filter(group__in=user.groups.all(), show_kb_menu=True).distinct()
     return (
         profiles.filter(allowed_kb_lessons__isnull=False).exists()

@@ -18,6 +18,7 @@ from .models import (
     CourseRelearnState,
     AttemptAnswer,
     LearningCourse,
+    LearningCourseItem,
     LearningCourseFinalQuestion,
     LearningCourseFinalAttempt,
     LearningCourseFinalAnswer,

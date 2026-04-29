@@ -62,10 +62,8 @@
               {% if inline_admin_formset.formset.can_delete and inline_admin_formset.has_delete_permission %}
                 <td class="delete">
                   {% if inline_admin_form.deletion_field %}
-                    <label class="tg-inline-delete" title="Удалить элемент курса">
-                      {{ inline_admin_form.deletion_field.field }}
-                      <span class="tg-inline-delete-button" aria-hidden="true">&times;</span>
-                    </label>
+                    <div class="tg-inline-delete-native" style="display:none !important;">{{ inline_admin_form.deletion_field.field }}</div>
+                    <button type="button" class="tg-inline-delete-button js-course-item-delete" title="Удалить элемент курса" aria-label="Удалить элемент курса">&times;</button>
                   {% endif %}
                 </td>
               {% endif %}

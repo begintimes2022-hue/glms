@@ -979,6 +979,21 @@ body.app-courses.model-learningcourse .tg-light-shell .tabular.inline-related tr
   display: none;
 }
 
+body.app-courses.model-learningcourse .tg-inline-delete-native,
+body.app-courses.model-learningcourse td.delete input[type="checkbox"],
+body.app-courses.model-learningcourse td.delete .inline-deletelink,
+body.app-courses.model-learningcourse td.delete .delete,
+body.app-courses.model-learningcourse td.delete > :not(.js-course-item-delete),
+body.app-courses.model-learningcourse td.delete a,
+body.app-courses.model-learningcourse td.delete label {
+  display: none;
+}
+
+body.app-courses.model-learningcourse #items-group .inline-deletelink,
+body.app-courses.model-learningcourse #items-group .delete-row {
+  display: none !important;
+}
+
 body.app-courses.model-learningcourse .tg-light-shell .tabular.inline-related .related-widget-wrapper {
   display: block;
 }

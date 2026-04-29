@@ -10,6 +10,12 @@
     });
   }
 
+  function removeNativeDeleteLinks() {
+    document.querySelectorAll('#items-group .inline-deletelink, #items-group .delete-row').forEach(function (node) {
+      node.remove();
+    });
+  }
+
   function clearSelect(select, placeholder) {
     if (!select) return;
     select.innerHTML = "";
@@ -120,17 +126,34 @@
   function bindDelete(row) {
     if (!row || row.dataset.courseItemsDeleteBound === "1") return;
     const deleteCheckbox = row.querySelector('input[type="checkbox"][id$="-DELETE"]');
-    if (!deleteCheckbox) return;
+    const deleteButton = row.querySelector(".js-course-item-delete");
+    if (!deleteCheckbox && !deleteButton) return;
 
     row.dataset.courseItemsDeleteBound = "1";
 
-    deleteCheckbox.addEventListener("change", function () {
-      if (deleteCheckbox.checked) {
+    function syncDeleteState() {
+      if (deleteCheckbox && deleteCheckbox.checked) {
         row.classList.add("tg-inline-row-hidden");
       } else {
         row.classList.remove("tg-inline-row-hidden");
       }
-    });
+    }
+
+    if (deleteCheckbox) {
+      deleteCheckbox.addEventListener("change", syncDeleteState);
+      syncDeleteState();
+    }
+
+    if (deleteButton) {
+      deleteButton.addEventListener("click", function () {
+        if (deleteCheckbox) {
+          deleteCheckbox.checked = true;
+          syncDeleteState();
+        } else {
+          row.classList.add("tg-inline-row-hidden");
+        }
+      });
+    }
   }
 
   async function prepareRow(row, preserveSelections) {
@@ -184,12 +207,14 @@
 
   document.addEventListener("DOMContentLoaded", function () {
     relabelAddButton();
+    removeNativeDeleteLinks();
     initExistingRows();
 
     document.addEventListener("formset:added", function (event) {
       const row = event.target;
       window.setTimeout(function () {
         relabelAddButton();
+        removeNativeDeleteLinks();
         initNewRow(row);
       }, 0);
     });
@@ -198,6 +223,7 @@
     if (tbody && window.MutationObserver) {
       const observer = new MutationObserver(function (mutations) {
         relabelAddButton();
+        removeNativeDeleteLinks();
         mutations.forEach(function (mutation) {
           mutation.addedNodes.forEach(function (node) {
             if (!(node instanceof HTMLElement)) return;

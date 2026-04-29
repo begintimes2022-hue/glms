@@ -12,6 +12,7 @@ register = template.Library()
 
 
 _ARTICLE_LINK_RE = re.compile(r"\[([^\]]+)\]\(article:(\d+)\)")
+_ANCHOR_TAG_RE = re.compile(r"<a\b(?![^>]*\btarget=)([^>]*)>", flags=re.IGNORECASE)
 
 
 def _replace_article_links(source: str, route_name: str) -> str:
@@ -36,6 +37,10 @@ def _replace_article_links(source: str, route_name: str) -> str:
     return _ARTICLE_LINK_RE.sub(repl, source)
 
 
+def _force_links_new_tab(html: str) -> str:
+    return _ANCHOR_TAG_RE.sub(r'<a\1 target="_blank" rel="noopener noreferrer">', html)
+
+
 @register.filter(name="lesson_markdown")
 def lesson_markdown(value):
     source = escape(value or "")
@@ -48,6 +53,7 @@ def lesson_markdown(value):
             "tables",
         ],
     )
+    html = _force_links_new_tab(html)
     return mark_safe(html)
 
 
@@ -63,4 +69,5 @@ def lesson_markdown_kb(value):
             "tables",
         ],
     )
+    html = _force_links_new_tab(html)
     return mark_safe(html)

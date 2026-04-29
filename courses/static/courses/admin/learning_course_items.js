@@ -117,6 +117,22 @@
     };
   }
 
+  function bindDelete(row) {
+    if (!row || row.dataset.courseItemsDeleteBound === "1") return;
+    const deleteCheckbox = row.querySelector('input[type="checkbox"][id$="-DELETE"]');
+    if (!deleteCheckbox) return;
+
+    row.dataset.courseItemsDeleteBound = "1";
+
+    deleteCheckbox.addEventListener("change", function () {
+      if (deleteCheckbox.checked) {
+        row.classList.add("tg-inline-row-hidden");
+      } else {
+        row.classList.remove("tg-inline-row-hidden");
+      }
+    });
+  }
+
   async function prepareRow(row, preserveSelections) {
     if (!row) return;
     const { sectionSelect, moduleSelect, lessonSelect } = getRowControls(row);
@@ -138,6 +154,7 @@
     if (!sectionSelect || !moduleSelect) return;
 
     row.dataset.courseItemsBound = "1";
+    bindDelete(row);
 
     sectionSelect.addEventListener("change", async function () {
       await loadModules(sectionSelect.value, moduleSelect, "");

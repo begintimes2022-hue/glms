@@ -975,6 +975,10 @@ body.app-courses.model-learningcourse .tg-light-shell .tabular.inline-related td
   text-align: center;
 }
 
+body.app-courses.model-learningcourse .tg-light-shell .tabular.inline-related tr.tg-inline-row-hidden {
+  display: none;
+}
+
 body.app-courses.model-learningcourse .tg-light-shell .tabular.inline-related .related-widget-wrapper {
   display: block;
 }

@@ -60,7 +60,14 @@
                 {% endfor %}
               {% endfor %}
               {% if inline_admin_formset.formset.can_delete and inline_admin_formset.has_delete_permission %}
-                <td class="delete">{% if inline_admin_form.original %}{{ inline_admin_form.deletion_field.field }}{% endif %}</td>
+                <td class="delete">
+                  {% if inline_admin_form.deletion_field %}
+                    <label class="tg-inline-delete" title="Удалить элемент курса">
+                      {{ inline_admin_form.deletion_field.field }}
+                      <span class="tg-inline-delete-button" aria-hidden="true">&times;</span>
+                    </label>
+                  {% endif %}
+                </td>
               {% endif %}
             </tr>
           {% endfor %}
